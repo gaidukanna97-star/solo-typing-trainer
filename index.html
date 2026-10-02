@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="uk" data-theme="auto" data-motion="on">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Соло — тренажер сенсорного набору</title>
+  <meta name="description" content="Браузерний тренажер сенсорного набору українською та англійською: клавіатурні гами, слова з відкритих клавіш, Академія частотних комбінацій.">
+  <meta name="color-scheme" content="light dark">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip" href="#app">Перейти до змісту</a>
+  <header class="top">
+    <a class="brand" href="#/" aria-label="Соло — на головну"><span class="brand-mark" aria-hidden="true">С</span> Соло</a>
+    <nav class="nav" aria-label="Основна навігація">
+      <a href="#/">Шлях</a>
+      <a href="#/academy">Академія</a>
+      <a href="#/daily">Заняття дня</a>
+      <a href="#/stats">Статистика</a>
+      <a href="#/custom">Власний текст</a>
+      <a href="#/sources">Джерела та ліцензії</a>
+      <a href="#/settings">Налаштування</a>
+    </nav>
+    <button type="button" class="lang-badge" id="lang-badge" title="Змінити мову набору" aria-label="Змінити мову набору" hidden></button>
+  </header>
+  <main id="app" tabindex="-1">
+    <p class="muted">Завантаження…</p>
+  </main>
+  <footer class="foot">
+    <p>Одна клавіша — один палець. Після руху — повернення на домашній ряд. Прогрес зберігається лише в цьому браузері.</p>
+  </footer>
+  <div id="live" class="visually-hidden" aria-live="polite" aria-atomic="true"></div>
+  <noscript><p class="notice notice-error">Для роботи тренажера потрібен JavaScript.</p></noscript>
+  <script type="module" src="src/ui/app.js"></script>
+</body>
+</html>

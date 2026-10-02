@@ -1,0 +1,14 @@
+{
+  "name": "Соло — тренажер сенсорного набору",
+  "short_name": "Соло",
+  "description": "Сенсорний набір українською та англійською: гами, слова з відкритих клавіш, Академія.",
+  "lang": "uk",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f4f5f8",
+  "theme_color": "#1f4fd1",
+  "icons": [
+    { "src": "assets/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
