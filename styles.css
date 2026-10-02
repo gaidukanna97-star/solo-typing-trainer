@@ -282,3 +282,24 @@ details summary { cursor: pointer; font-weight: 600; padding: .3rem 0; }
 /* Гість */
 .guest-box { margin-top: 1.2rem; padding-top: .4rem; border-top: 1px solid var(--line); }
 .sync[data-sync="guest"] { color: var(--warn); border-color: var(--warn); }
+
+/* Посібник */
+.lead { font-size: 1.15rem; max-width: 70ch; }
+.toc { display: flex; flex-wrap: wrap; gap: .4rem; margin: .8rem 0 1rem; }
+.toc a { padding: .35rem .8rem; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--text); text-decoration: none; font-weight: 600; font-size: .95rem; }
+.toc a:hover { border-color: var(--accent); color: var(--accent); }
+.benefits { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: .7rem; margin: .8rem 0; }
+.benefits > div { padding: .7rem .9rem; border-radius: 10px; border: 1px solid var(--line); border-top: 4px solid var(--accent); }
+.benefits h3 { margin: 0 0 .2rem; color: var(--accent); }
+.benefits p { margin: 0; }
+.checklist { list-style: none; padding: 0; }
+.checklist li { position: relative; padding: .25rem 0 .25rem 1.7rem; }
+.checklist li::before { content: "✓"; position: absolute; left: 0; color: var(--accent); font-weight: 700; }
+.rules li { margin: .5rem 0; padding-left: .2rem; }
+.rules li::marker { color: var(--accent); font-weight: 700; }
+.finger-table { margin-top: 1rem; }
+.finger-table th[scope="row"] { color: var(--text); white-space: nowrap; }
+.finger-table td { font-family: var(--mono); }
+.faq dt { font-weight: 700; font-size: 1rem; color: var(--text); margin-top: .9rem; }
+.faq dd { margin: .2rem 0 0; font-size: 1rem; font-weight: 400; }
+main section[tabindex="-1"]:focus { outline: none; }

@@ -9,9 +9,10 @@ import { buildCurriculum } from '../core/curriculum.js';
 import * as pages from './views.js';
 import { auth, cabinet } from './account-views.js';
 import { exam, certificate } from './exam-views.js';
+import { guide } from './guide-view.js';
 import { $, $$, esc, announce } from './dom.js';
 
-const views = { ...pages, auth, cabinet, exam, certificate };
+const views = { ...pages, auth, cabinet, exam, certificate, guide };
 
 const main = document.getElementById('app');
 const curricula = {};
@@ -251,6 +252,7 @@ const app = {
     updateNav(route, lang, Boolean(this.state));
 
     if (route === 'sources') return void (await views.sources(this, main));
+    if (route === 'guide') { views.guide(this, main); window.scrollTo(0, 0); return; }
     if (!this.state) return void (await views.auth(this, main));
     if (!lang) return void views.onboarding(this, main);
 

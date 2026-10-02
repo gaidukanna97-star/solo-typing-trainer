@@ -119,6 +119,20 @@ try {
   await waitFor("document.querySelector('#auth-form')", 'екран входу');
   await shot('00-auth');
 
+  // Посібник відкритий без входу.
+  await goto('#/guide');
+  await waitFor("document.querySelector('#g-why')", 'посібник');
+  assert.equal(await js("['why','posture','fingers','rules','program','stuck'].every((id) => document.querySelector('#g-' + id))"), true, 'усі розділи посібника');
+  assert.equal(await js("document.querySelectorAll('#g-fingers .kb').length"), 2, 'схеми обох розкладок');
+  assert.match(await js("document.querySelector('.finger-table tbody tr').textContent"), /лівий мізинець\s*Ф\s*Й Ф Я\s*A\s*Q A Z/);
+  await click('[data-jump="fingers"]');
+  assert.equal(await js("document.activeElement.id"), 'g-fingers', 'зміст переводить до розділу');
+  assert.equal(await js("location.hash"), '#/guide');
+  await shot('00a-guide');
+  await goto('#/');
+  await waitFor("document.querySelector('#auth-form')");
+  step('посібник: мотивація, постава, пальці, правила, поради — доступний без кабінету');
+
   // 0. Кабінет на сервері: ім'я, пароль і секретне питання — без пошти й телефону.
   const fill = (id, value) => js(`document.querySelector('#${id}').value = ${JSON.stringify(value)}`);
   const submitAuth = async (fields) => {

@@ -70,7 +70,8 @@ export async function auth(app, root) {
     root.innerHTML = `
       <section class="card narrow" aria-labelledby="auth-h">
         <h1 id="auth-h">${title}</h1>
-        <p>Соло — тренажер сенсорного набору. Кабінет зберігає твій прогрес, звання, досягнення й сертифікати.</p>
+        <p>Соло — тренажер сенсорного набору. Кабінет зберігає твій прогрес, звання, досягнення й сертифікати.
+          <a href="#/guide">Навіщо це потрібно і як навчитися — у посібнику.</a></p>
         ${banner}${legacy}
         <div class="phase-tabs" role="group" aria-label="Вхід, новий кабінет або відновлення пароля">
           <button type="button" data-mode="login" aria-pressed="${mode === 'login'}">Увійти</button>
