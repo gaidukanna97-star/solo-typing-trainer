@@ -1,0 +1,44 @@
+{
+  "en": {
+    "language": "en",
+    "source": "frequencywords-2018-en",
+    "sourceSha256": "5351ff405b1126ef555791dd4d9798a48e3e9a501a9fc481a9da957752cfb458",
+    "algorithmVersion": "1.0.0",
+    "unicode": "NFC",
+    "case": "lowercase",
+    "apostrophes": "’ ʼ ‘ ` ′ → ' (U+0027)",
+    "allowedPattern": "^[a-z]+(?:['-][a-z]+)*$",
+    "counts": {
+      "input": 50000,
+      "badCharset": 1551,
+      "badLength": 443,
+      "duplicatesMerged": 0,
+      "afterCharsetAndDedup": 48006,
+      "notInDictionary": 15880,
+      "blocked": 357,
+      "valid": 31769,
+      "kept": 6000
+    }
+  },
+  "uk": {
+    "language": "uk",
+    "source": "frequencywords-2018-uk",
+    "sourceSha256": "881686fe66a168b79f6a9ee2f6cbbf944cfb12bfb7040913ef535cb29bd86ec9",
+    "algorithmVersion": "1.0.0",
+    "unicode": "NFC",
+    "case": "lowercase",
+    "apostrophes": "’ ʼ ‘ ` ′ → ' (U+0027)",
+    "allowedPattern": "^[а-щьюяєіїґ]+(?:['-][а-щьюяєіїґ]+)*$",
+    "counts": {
+      "input": 50000,
+      "badCharset": 5272,
+      "badLength": 306,
+      "duplicatesMerged": 0,
+      "afterCharsetAndDedup": 44422,
+      "notInDictionary": 17193,
+      "blocked": 370,
+      "valid": 26859,
+      "kept": 6000
+    }
+  }
+}
