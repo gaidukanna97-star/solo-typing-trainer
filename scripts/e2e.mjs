@@ -31,7 +31,8 @@ const server = await startServer(PORT);
 const profileDir = mkdtempSync(join(tmpdir(), 'solo-e2e-'));
 const browser = spawn(browserPath, [
   '--headless=new', `--remote-debugging-port=${DEBUG_PORT}`, `--user-data-dir=${profileDir}`,
-  '--no-first-run', '--no-default-browser-check', '--window-size=1280,900', 'about:blank',
+  '--no-first-run', '--no-default-browser-check', '--window-size=1280,900',
+  ...(process.env.CI ? ['--no-sandbox', '--disable-gpu'] : []), 'about:blank',
 ], { stdio: 'ignore' });
 
 let ws;
