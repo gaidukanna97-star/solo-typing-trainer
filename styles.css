@@ -208,6 +208,7 @@ input[type="checkbox"] { width: 1.15rem; height: 1.15rem; vertical-align: -3px; 
   .result-cols, .stepper { grid-template-columns: 1fr; }
   .top { padding: .5rem .8rem; }
   .nav { order: 3; flex-basis: 100%; }
+  .nav a { min-height: 44px; display: inline-flex; align-items: center; }
   .lang-badge { margin-left: auto; }
   main { padding: 1rem .8rem 2rem; }
   .kb { --k: clamp(18px, 6.2vw, 40px); gap: 3px; padding: 6px; }

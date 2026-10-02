@@ -447,7 +447,7 @@ try {
   await sleep(200);
   assert.equal(await js('document.documentElement.scrollWidth <= window.innerWidth'), true, 'немає горизонтального прокручування');
   await shot('11-mobile');
-  assert.equal(await js("Math.min(...[...document.querySelectorAll('.btn, .phase-tabs button')].filter((e) => e.offsetParent).map((e) => e.getBoundingClientRect().height)) >= 44"), true, 'кнопки не менші за 44 px');
+  assert.equal(await js("Math.min(...[...document.querySelectorAll('.btn, .phase-tabs button, .nav a')].filter((e) => e.offsetParent).map((e) => e.getBoundingClientRect().height)) >= 44"), true, 'кнопки не менші за 44 px');
   await send('Emulation.clearDeviceMetricsOverride');
   // Системне налаштування «менше руху» вимикає переходи й плавне прокручування.
   await send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] });
