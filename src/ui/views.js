@@ -4,17 +4,18 @@ import {
   generateText, isAvailable, isDone, nextLesson, moduleProgress, userOpenChars,
   warmupText, reviewExercise, realText, dailyPlan, show, describeGram,
 } from '../core/curriculum.js';
-import { LEVELS, PASS_RULES, PLACEMENT, DEFAULT_SETTINGS } from '../core/config.js';
+import { LEVELS, PASS_RULES, PLACEMENT } from '../core/config.js';
 import { KEYS, FINGERS, fingerForChar, keyForChar } from '../core/layouts.js';
 import { weakChars, slowBigrams, errorBigrams } from '../core/analysis.js';
 import { drillText } from '../core/feedback.js';
-import { exportState, importState, emptyProfile } from '../core/storage.js';
+import { exportState, importState, emptyProfile, emptyState } from '../core/storage.js';
+import { awardDaily } from '../core/gamification.js';
 import { prepareCustomText, MAX_FILE, MAX_TEXT } from '../core/customtext.js';
 import { runExercise } from './trainer.js';
 import { keyboardHtml, legendHtml } from './keyboard.js';
 import { esc, $, $$, formatTime, showChar, download, announce } from './dom.js';
 
-const LANG_LABEL = { uk: 'Українська', en: 'English' };
+export const LANG_LABEL = { uk: 'Українська', en: 'English' };
 const STAGE = {
   1: ['Етап 1 · Клавіатурні гами', 'Звичка не дивитися на клавіатуру й повертати пальці на домашній ряд. Короткі повторювані рухи, нові клавіші відкриваються по дві.'],
   2: ['Етап 2 · Слова з відкритих клавіш', 'Реальні частотні слова, у яких немає жодного ще не вивченого символу. Добір слів підлаштовується під твої помилки й повільні переходи.'],
@@ -275,9 +276,17 @@ export function daily(app, root) {
   const plan = app.daily;
   if (plan.i >= plan.steps.length) {
     app.daily = null;
+    const reward = awardDaily(app.state, { cur, lang: cur.lang, now: Date.now() });
+    app.save();
+    app.updateUser();
+    const extra = [
+      reward.after.index > reward.before.index ? `Нове звання: «${reward.after.grade.name}»!` : '',
+      reward.achievements.length ? `Нові досягнення: ${reward.achievements.map((a) => `«${a.title}»`).join(', ')}.` : '',
+    ].join(' ');
     root.innerHTML = `<section class="card narrow"><h1>Заняття завершено</h1>
+      <p><strong class="xp">+${reward.xp} XP</strong> за повне заняття. ${esc(extra)}</p>
       <p>Розігрів, цільова навичка, закріплення й реальний текст — усе пройдено. Повертайся завтра: коротко й щодня краще, ніж довго й зрідка.</p>
-      <p><a class="btn btn-primary" href="#/">До навчального шляху</a> <a class="btn" href="#/stats">Переглянути статистику</a></p></section>`;
+      <p><a class="btn btn-primary" href="#/">До навчального шляху</a> <a class="btn" href="#/cabinet">Відкрити кабінет</a></p></section>`;
     $('a.btn-primary', root).focus();
     return;
   }
@@ -334,7 +343,7 @@ function chart(history) {
     <p class="muted">Зафарбована точка — зарахована спроба, порожня — не зарахована.</p>`;
 }
 
-export function stats(app, root) {
+export function statsHtml(app) {
   const { cur, profile } = app;
   const weak = weakChars(profile);
   const slow = slowBigrams(profile.bigrams);
@@ -348,8 +357,8 @@ export function stats(app, root) {
   const rows = h.slice(-12).reverse().map((x) => `<tr><td>${new Date(x.t).toLocaleString('uk-UA', { dateStyle: 'short', timeStyle: 'short' })}</td><td>${esc(title(x.id))}</td><td>${x.spm}</td><td>${x.acc}%</td><td>${x.errors}</td><td>${formatTime(x.ms)}</td><td>${x.passed ? '✓ так' : '✗ ні'}</td></tr>`).join('');
   const fingerOf = (pair) => describeGram(cur.layout, pair);
 
-  root.innerHTML = `
-    <h1>Статистика · ${LANG_LABEL[cur.lang]}</h1>
+  return `
+    <h2 class="section-title">Статистика · ${LANG_LABEL[cur.lang]}</h2>
     <dl class="summary">
       <div><dt>Залікових спроб</dt><dd>${h.length}</dd></div>
       <div><dt>Зараховано</dt><dd>${passedCount}</dd></div>
@@ -370,7 +379,7 @@ export function stats(app, root) {
         ${errB.length ? `<h3>Переходи з помилками</h3><ul class="plain">${errB.map((s) => `<li><kbd>${esc(s.pair)}</kbd> — помилок ${s.err}</li>`).join('')}</ul>` : ''}
       </section>
     </div>
-    <p><a class="btn btn-primary" href="#/review">Повторити слабкі місця</a></p>
+    <p><a class="btn" href="#/review">Повторити слабкі місця</a></p>
     <section class="card"><h2>Останні спроби</h2>
       ${rows ? `<div class="scroll"><table><thead><tr><th>Коли</th><th>Вправа</th><th>SPM</th><th>Точність</th><th>Помилки</th><th>Час</th><th>Зараховано</th></tr></thead><tbody>${rows}</tbody></table></div>` : '<p class="muted">Ще немає залікових спроб.</p>'}
     </section>
@@ -489,10 +498,11 @@ export async function sources(app, root) {
     </section>
     <section class="card"><h2>Приватність</h2>
       <ul>
-        <li>Прогрес зберігається лише у твоєму браузері (localStorage). Сервера, облікових записів і аналітики немає.</li>
+        <li>Кабінет і прогрес зберігаються лише у твоєму браузері (localStorage). Сервера й аналітики немає; пошта й телефон не потрібні.</li>
+        <li>Для кабінету потрібні лише ім’я та пароль. Пароль не зберігається — тільки його хеш (PBKDF2-SHA-256 із сіллю). Він захищає від випадкового входу іншої людини за тим самим комп’ютером, але дані прогресу не шифруються.</li>
         <li>Камера, мікрофон і біометрія не використовуються. Тренажер не контролює погляд і не стверджує, що може це робити: підглядання стає зайвим завдяки побудові вправ.</li>
-        <li>Рейтингу між користувачами немає — лише особисті результати.</li>
-        <li>Видалити профіль можна в «Налаштуваннях».</li>
+        <li>Рейтингу між користувачами немає — звання, досягнення й результати особисті.</li>
+        <li>Видалити кабінет можна на сторінці «Кабінет» або на екрані входу; скинути прогрес — у «Налаштуваннях».</li>
       </ul>
     </section>
     <section class="card"><h2>Використання AI</h2>
@@ -532,7 +542,7 @@ export function settings(app, root) {
       <p class="notice" id="set-msg" role="alert" hidden></p>
       <h2>Видалення</h2>
       <p><button type="button" class="btn btn-danger" id="set-reset">Видалити профіль «${LANG_LABEL[s.lang]}»</button>
-        <button type="button" class="btn btn-danger" id="set-wipe">Видалити всі дані</button></p>
+        <button type="button" class="btn btn-danger" id="set-wipe">Скинути весь прогрес кабінету</button></p>
     </section>`;
   const msg = (text, kind = '') => {
     const el = $('#set-msg', root);
@@ -575,8 +585,8 @@ export function settings(app, root) {
     app.replaceState(app.state);
   });
   $('#set-wipe', root).addEventListener('click', () => {
-    if (!confirm('Видалити всі дані застосунку з цього браузера? Цю дію не можна скасувати.')) return;
-    app.replaceState({ version: app.state.version, settings: { ...DEFAULT_SETTINGS }, profiles: { uk: emptyProfile(), en: emptyProfile() } });
+    if (!confirm('Скинути весь прогрес, звання й досягнення цього кабінету? Цю дію не можна скасувати.')) return;
+    app.replaceState(emptyState());
   });
 }
 

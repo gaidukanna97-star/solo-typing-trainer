@@ -114,8 +114,27 @@ try {
   await send('Log.enable');
   await send('Page.enable');
   await send('Page.navigate', { url: `http://127.0.0.1:${PORT}/` });
+  await waitFor("document.querySelector('#auth-form')", 'екран входу');
+  await shot('00-auth');
+
+  // 0. Кабінет: лише ім'я та пароль.
+  const fill = (id, value) => js(`document.querySelector('#${id}').value = ${JSON.stringify(value)}`);
+  const submitAuth = async (name, pass, pass2) => {
+    await fill('auth-name', name);
+    await fill('auth-pass', pass);
+    if (pass2 !== undefined) await fill('auth-pass2', pass2);
+    await click('#auth-submit');
+  };
+  assert.match(await text('#auth-h'), /Новий кабінет/);
+  await submitAuth('Оля', 'таємно', 'інакше');
+  await waitFor("!document.querySelector('#auth-msg').hidden");
+  assert.match(await text('#auth-msg'), /Паролі не збігаються/);
+  await submitAuth('Оля', 'таємно', 'таємно');
   await waitFor("document.querySelector('[data-lang]')", 'екран вибору мови');
+  assert.match(await text('#user-link'), /Оля · Новачок/);
+  assert.equal(await js("!localStorage.getItem('solo-accounts-v1').includes('таємно')"), true, 'пароль не зберігається відкрито');
   await shot('01-onboarding');
+  step('кабінет створено: ім’я та пароль, без пошти');
 
   // 1. Новий профіль і вибір української.
   await click('[data-lang="uk"]');
@@ -158,6 +177,8 @@ try {
   assert.equal(await js("soloApp.profile.lessons['s1-fj'].streak"), 1);
   assert.equal(await js("soloApp.profile.history[0].errors"), 1, 'виправлена помилка у статистиці');
   assert.match(await text('#res-advice'), /Ще 2 успішні спроби поспіль/);
+  assert.match(await text('#res-reward'), /\+10 XP/);
+  assert.match(await text('#res-reward'), /Перший залік/);
   await shot('05-result');
   step('помилка врахована, чужа розкладка/Alt/dead key не ламають спробу, є наступна дія');
 
@@ -180,7 +201,31 @@ try {
   assert.equal(await js("soloApp.profile.lessons['s1-fj'].done && soloApp.profile.lessons['s1-fj'].bestSpm > 0"), true);
   assert.equal(await js("document.querySelectorAll('.lesson.is-done').length"), 1);
   assert.match(await text('.next-title'), /Нові клавіші: В Л/);
+  assert.match(await text('#user-link'), /Оля/, 'вхід зберігся після перезавантаження');
   step('прогрес і особистий результат збережено після перезавантаження');
+
+  // 4а. Вихід, хибний пароль, повторний вхід, кабінет.
+  const xp = await js('soloApp.state.game.xp');
+  assert.ok(xp >= 85, 'досвід нараховано');
+  await click('#logout');
+  await waitFor("document.querySelector('#auth-form')", 'екран входу після виходу');
+  assert.equal(await js("document.querySelector('#user-box').hidden"), true);
+  await goto('#/academy');
+  await waitFor("document.querySelector('#auth-form')", 'без входу сторінки закриті');
+  await submitAuth('Оля', 'не той пароль');
+  await waitFor("!document.querySelector('#auth-msg').hidden");
+  assert.match(await text('#auth-msg'), /Невірне ім’я або пароль/);
+  await submitAuth('оля', 'таємно');
+  await waitFor("window.soloApp.state && document.querySelector('#user-link').textContent.includes('Оля')", 'повторний вхід');
+  await goto('#/cabinet');
+  await waitFor("document.querySelector('.grade-card')");
+  assert.match(await text('#grade-h'), /Звання: Новачок/);
+  assert.equal(await js('soloApp.state.game.xp'), xp);
+  assert.equal(await js("document.querySelectorAll('.badge.is-got').length >= 2"), true);
+  await shot('05b-cabinet');
+  await goto('#/');
+  await waitFor("document.querySelector('#go-next')");
+  step('вихід, хибний пароль відхилено, повторний вхід, кабінет зі званням і досягненнями');
 
   // 5. Невдала спроба: швидкість без точності не зараховується, порада конкретна.
   await click('#go-next');
@@ -232,7 +277,7 @@ try {
 
   // 7. Інші сторінки.
   await goto('#/stats');
-  await waitFor("document.querySelector('.chart, .kb')");
+  await waitFor("document.querySelector('.grade-card') && document.querySelector('.chart, .kb')");
   await shot('09-stats');
   await goto('#/sources');
   await waitFor("document.querySelectorAll('table tbody tr').length >= 4", 'таблиця джерел');

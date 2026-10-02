@@ -5,7 +5,8 @@ import { looksLikeWrongLayout, unsupportedChars } from '../core/layouts.js';
 import { PASS_RULES } from '../core/config.js';
 import { recordAttempt } from '../core/storage.js';
 import { nextAction } from '../core/feedback.js';
-import { nextLesson } from '../core/curriculum.js';
+import { nextLesson, moduleProgress } from '../core/curriculum.js';
+import { awardAttempt } from '../core/gamification.js';
 import { keyboardHtml, legendHtml, highlightNext } from './keyboard.js';
 import { esc, $, announce, formatTime, showChar } from './dom.js';
 
@@ -233,10 +234,20 @@ export function runExercise(root, app, ex, opts = {}) {
     const gate = { speedGate: settings.speedGate };
     const passed = isPassed(metrics, rule, gate);
     let outcome = null;
+    let reward = null;
     if (isTest) {
       const needed = ex.lesson ? settings.streak : Number.MAX_SAFE_INTEGER;
-      outcome = recordAttempt(profile, ex.id, metrics, passed, needed, Date.now());
+      const now = Date.now();
+      outcome = recordAttempt(profile, ex.id, metrics, passed, needed, now);
+      const module = ex.lesson?.module ? cur.modules.find((m) => m.id === ex.lesson.module) : null;
+      reward = awardAttempt(app.state, {
+        cur, lang: cur.lang, lesson: ex.lesson || null, exId: ex.id, metrics, passed,
+        justDone: outcome.justDone,
+        moduleDone: Boolean(module && outcome.justDone && moduleProgress(cur, profile, module).complete),
+        now,
+      });
       app.save();
+      app.updateUser();
       seed++;
     }
     const verdict = isTest && opts.verdict ? opts.verdict(metrics, passed) : null;
@@ -248,10 +259,22 @@ export function runExercise(root, app, ex, opts = {}) {
         next: next && next.id !== ex.id ? next : null,
       })
       : null;
-    renderResults(metrics, { isTest, passed, outcome, feedback, verdict, next });
+    renderResults(metrics, { isTest, passed, outcome, feedback, verdict, next, reward });
   }
 
-  function renderResults(m, { isTest, passed, outcome, feedback, verdict, next }) {
+  function rewardHtml(reward) {
+    if (!reward || (!reward.xp && !reward.achievements.length)) return '';
+    const up = reward.after.index > reward.before.index;
+    const parts = reward.parts.map((p) => `${esc(p.label)} +${p.xp}`).join(' · ');
+    const badges = reward.achievements.map((a) => `<li><strong>🏅 ${esc(a.title)}</strong> — ${esc(a.about)}</li>`).join('');
+    return `<div class="reward" id="res-reward">
+      ${reward.xp ? `<p><strong class="xp">+${reward.xp} XP</strong> <span class="muted">${parts}</span></p>` : ''}
+      ${up ? `<p class="grade-up">Нове звання: «${esc(reward.after.grade.name)}»! ${esc(reward.after.grade.about)}</p>` : reward.after.next ? `<p class="muted">Звання «${esc(reward.after.grade.name)}». До звання «${esc(reward.after.next.name)}» — ${reward.after.toNext} XP.</p>` : ''}
+      ${badges ? `<p>Нові досягнення:</p><ul class="plain">${badges}</ul>` : ''}
+    </div>`;
+  }
+
+  function renderResults(m, { isTest, passed, outcome, feedback, verdict, next, reward }) {
     const effectiveMinSpm = settings.speedGate ? rule.minSpm : 0;
     let status;
     if (!isTest) status = '<p class="result-status">Розучування завершено. Результат не зараховується — це була підготовка.</p>';
@@ -313,6 +336,7 @@ export function runExercise(root, app, ex, opts = {}) {
           ${m.rhythm !== null ? `Нерівномірність ритму: ${m.rhythm}% (що менше, то рівніше).` : ''}
           ${m.level ? `Рівень спроби: «${esc(m.level.name)}» — ${esc(m.level.goal)}.` : 'Рівень спроби не визначено: точність нижча за 95%.'}</p>
         ${compare ? `<p>${esc(compare)}</p>` : ''}
+        ${rewardHtml(reward)}
         <div class="result-cols">
           <div><h2>Помилки за символами</h2>${errs ? `<ul class="chips">${errs}</ul>` : '<p class="muted">Без помилок.</p>'}</div>
           <div><h2>Найповільніші переходи</h2>${slow ? `<ul class="chips">${slow}</ul>` : '<p class="muted">Замало даних.</p>'}</div>

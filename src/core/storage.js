@@ -17,11 +17,16 @@ export function emptyProfile() {
   };
 }
 
+export function emptyGame() {
+  return { xp: 0, passed: 0, achievements: {}, days: [] };
+}
+
 export function emptyState() {
   return {
     version: SCHEMA_VERSION,
     settings: { ...DEFAULT_SETTINGS },
     profiles: { uk: emptyProfile(), en: emptyProfile() },
+    game: emptyGame(),
   };
 }
 
@@ -52,6 +57,15 @@ export function validateState(raw) {
       if (isObject(p[field])) target[field] = p[field];
     }
     if (Array.isArray(p.history)) target.history = p.history.filter(isObject).slice(-HISTORY_LIMIT);
+  }
+  const g = raw.game;
+  if (isObject(g)) {
+    if (Number.isFinite(g.xp) && g.xp >= 0) state.game.xp = Math.floor(g.xp);
+    if (Number.isInteger(g.passed) && g.passed >= 0) state.game.passed = g.passed;
+    if (isObject(g.achievements)) {
+      for (const [id, t] of Object.entries(g.achievements)) if (typeof t === 'number') state.game.achievements[id] = t;
+    }
+    if (Array.isArray(g.days)) state.game.days = g.days.filter((d) => /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(d)).slice(-400);
   }
   return state;
 }
