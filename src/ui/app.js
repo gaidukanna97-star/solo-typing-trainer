@@ -1,7 +1,7 @@
 // Точка входу: кабінети, синхронізація із сервером, стан, маршрутизація, завантаження даних.
 
 import { emptyProfile, validateState } from '../core/storage.js';
-import { loadRoot, saveRoot, currentUser, logout, adoptRemote, deleteAccount, isRemote } from '../core/accounts.js';
+import { loadRoot, saveRoot, currentUser, logout, adoptRemote, deleteAccount, isRemote, isGuest } from '../core/accounts.js';
 import { createRemote, defaultUrls, RemoteError } from '../core/remote.js';
 import { gradeFor } from '../core/gamification.js';
 import { DEFAULT_SETTINGS } from '../core/config.js';
@@ -30,6 +30,7 @@ const app = {
   daily: null,
   pendingDrill: null,
   authMessage: '',
+  authMode: null, // яку вкладку екрана входу відкрити наступного разу
   sync: 'local', // local | saved | saving | offline
 
   /** Після входу, виходу чи заміни даних: прив'язати стан до поточного кабінету. */
@@ -38,7 +39,7 @@ const app = {
     this.state = user ? user.data : null;
     this.daily = null;
     this.pendingDrill = null;
-    this.sync = isRemote(user) ? (user.remote.dirty ? 'offline' : 'saved') : 'local';
+    this.sync = isRemote(user) ? (user.remote.dirty ? 'offline' : 'saved') : isGuest(user) ? 'guest' : 'local';
     this.applySettings();
     this.updateUser();
   },
@@ -204,7 +205,7 @@ const app = {
     this.bind();
     this.persist();
     this.go('#/');
-    announce('Ти вийшов із кабінету.');
+    announce(isGuest(user) ? 'Прогрес гостя збережено в цьому браузері.' : 'Ти вийшов із кабінету.');
   },
 
   applySettings() {
@@ -225,6 +226,7 @@ const app = {
     $('#user-link').setAttribute('aria-label', `Кабінет: ${user.name}, звання «${g.grade.name}», ${user.data.game.xp} XP`);
     const label = {
       local: ['локальний', 'Локальний кабінет: прогрес зберігається лише в цьому браузері'],
+      guest: ['лише цей браузер', 'Гість: прогрес зберігається лише в цьому браузері. Створи кабінет, щоб не втратити його'],
       saved: ['збережено', 'Прогрес збережено на сервері'],
       saving: ['зберігаю…', 'Прогрес відправляється на сервер'],
       offline: ['офлайн', 'Немає зв’язку із сервером: прогрес збережено в браузері й буде відправлено пізніше'],

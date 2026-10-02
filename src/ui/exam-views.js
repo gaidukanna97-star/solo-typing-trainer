@@ -110,6 +110,7 @@ export function certificate(app, root, arg) {
         <div><dt>Час</dt><dd>${formatTime(c.ms)}</dd></div>
       </dl>
       <p class="cert-date">${date}</p>
+      ${user.guest ? '<p class="no-print notice notice-warn">Сертифікат виписано на ім’я «Гість». Щоб у ньому було твоє ім’я, створи кабінет (прогрес перейде в нього) і пройди зріз ще раз.</p>' : ''}
       <p class="cert-note">Вимоги рівня: від ${tier.minSpm} символів за хвилину при точності від ${tier.minAcc}%. Текст набрано без екранної клавіатури й підказок.
         Сертифікат сформовано автоматично за результатом зрізу в тренажері «Соло».</p>
     </article>`;

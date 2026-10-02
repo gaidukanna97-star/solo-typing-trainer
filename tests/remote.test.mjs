@@ -5,6 +5,7 @@ import { createRemote, defaultUrls, RemoteError, NetworkError, REMOTE_API } from
 import {
   emptyRoot, createAccount, login, logout, adoptRemote, isRemote, currentUser, listNames, loadRoot, saveRoot,
   localQuestion, resetLocalPassword, setLocalRecovery, verifyLocalPassword, checkRecovery, userId,
+  enterGuest, isGuest, guestOf, carriedData, dropGuest, GUEST_NAME,
 } from '../src/core/accounts.js';
 import { createService, memoryStore } from '../server/account-service.js';
 import { emptyState } from '../src/core/storage.js';
@@ -132,4 +133,56 @@ test('локальний кабінет: відновлення пароля з�
   const storage = fakeStorage();
   saveRoot(storage, root);
   assert.equal(localQuestion(loadRoot(storage), 'Оля'), 'Улюблене місто?');
+});
+
+test('гість: без імені й пароля, прогрес лишається в браузері й переходить до нового кабінету', async () => {
+  const storage = fakeStorage();
+  const root = loadRoot(storage);
+  assert.equal(carriedData(root), null);
+  enterGuest(root, 10);
+  const guest = currentUser(root);
+  assert.equal(guest.name, GUEST_NAME);
+  assert.equal(isGuest(guest), true);
+  assert.equal(isRemote(guest), false);
+  assert.deepEqual(guest.data, emptyState());
+  guest.data.settings.lang = 'en';
+  guest.data.game.xp = 130;
+  saveRoot(storage, root);
+  assert.ok(!/"hash"|"salt"|"token"/.test(storage.getItem('solo-accounts-v1')), 'у гостя немає ні пароля, ні сеансу сервера');
+
+  // Після перезавантаження гість і його прогрес на місці; вихід прогрес не стирає.
+  const again = loadRoot(storage);
+  assert.equal(isGuest(currentUser(again)), true);
+  assert.equal(currentUser(again).data.game.xp, 130);
+  logout(again);
+  assert.equal(guestOf(again).data.game.xp, 130);
+  enterGuest(again, 20);
+  assert.equal(currentUser(again).data.game.xp, 130, 'повторний вхід гостя не обнуляє прогрес');
+  assert.deepEqual(listNames(again), [], 'гість не є кабінетом');
+  await assert.rejects(login(again, GUEST_NAME, ''), /Невірне ім’я або пароль/, 'у гостя немає пароля — увійти «під гостем» за формою не можна');
+
+  // Локальний кабінет забирає прогрес гостя.
+  logout(again);
+  await createAccount(again, 'Оля', 'таємно', 30, { ...FAST, question: 'Кличка кота?', answer: 'Мурчик' });
+  assert.equal(currentUser(again).data.game.xp, 130);
+  assert.equal(guestOf(again), null, 'гостьовий профіль прибрано');
+
+  // Серверний кабінет: прогрес гостя відправляється під час реєстрації.
+  const net = fakeNetwork();
+  const remote = createRemote({ urls: ['https://x.example/api/account'], fetchImpl: net.fetchImpl });
+  await remote.detect();
+  const pc = emptyRoot();
+  enterGuest(pc, 1);
+  currentUser(pc).data.game.xp = 55;
+  const session = await remote.call('register', { name: 'Іван', password: 'таємно', question: 'Кличка кота?', answer: 'Рижик', data: carriedData(pc) });
+  dropGuest(pc);
+  adoptRemote(pc, session, 2);
+  assert.equal(currentUser(pc).data.game.xp, 55);
+  assert.equal(guestOf(pc), null);
+  assert.equal((await remote.call('login', { name: 'Іван', password: 'таємно' })).data.game.xp, 55, 'прогрес гостя тепер на сервері');
+
+  // Пошкоджений запис гостя не ламає застосунок.
+  const bad = fakeStorage();
+  bad.setItem('solo-accounts-v1', JSON.stringify({ version: 1, current: 'guest', users: { guest: { guest: true, data: 'сміття' } } }));
+  assert.deepEqual(currentUser(loadRoot(bad)).data, emptyState());
 });

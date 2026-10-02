@@ -3,6 +3,7 @@
 import {
   createAccount, login, deleteAccount, changePassword, listNames, currentUser, userId, isRemote,
   localQuestion, resetLocalPassword, setLocalRecovery, verifyLocalPassword, checkCredentials, checkRecovery,
+  enterGuest, isGuest, guestOf, carriedData, dropGuest,
   NAME_MAX, PASSWORD_MIN, QUESTION_MAX, QUESTION_EXAMPLES,
 } from '../core/accounts.js';
 import { RemoteError, NetworkError } from '../core/remote.js';
@@ -19,7 +20,8 @@ export async function auth(app, root) {
   let online = await app.ready;
   if (app.state) return; // поки чекали, вхід уже відбувся
   const localNames = listNames(app.root);
-  let mode = 'login'; // login | create | forgot
+  let mode = app.authMode || 'login'; // login | create | forgot
+  app.authMode = null;
   let found = null; // { name, question, local } — крок 2 відновлення пароля
   const initial = app.authMessage;
   app.authMessage = '';
@@ -30,8 +32,9 @@ export async function auth(app, root) {
       ? '<p class="notice">Кабінет зберігається на сервері: увійти можна з будь-якого комп’ютера, прогрес підтягнеться сам.</p>'
       : `<p class="notice notice-warn">Сервер кабінетів зараз недоступний. Можна створити локальний кабінет — він працюватиме лише в цьому браузері.
           <button type="button" class="btn btn-small" id="auth-retry">Перевірити зв’язок ще раз</button></p>`;
-    const legacy = mode === 'create' && app.root.legacy
-      ? '<p class="notice">У цьому браузері знайдено прогрес, збережений раніше. Він перейде до кабінету, який ти зараз створиш.</p>' : '';
+    const legacy = mode === 'create' && carriedData(app.root)
+      ? '<p class="notice" id="auth-carry">Прогрес, який ти набрав(-ла) як гість у цьому браузері, перейде до кабінету, який ти зараз створиш.</p>' : '';
+    const guest = guestOf(app.root);
     const nameField = `<p><label for="auth-name">Ім’я</label><br>
       <input type="text" id="auth-name" maxlength="${NAME_MAX}" autocomplete="username" value="${esc(keep.name || '')}"></p>`;
 
@@ -80,6 +83,11 @@ export async function auth(app, root) {
           <p><button type="submit" class="btn btn-primary" id="auth-submit">${submit}</button></p>
         </form>
         ${!online && localNames.length ? `<p class="muted">Локальні кабінети на цьому пристрої: ${localNames.map(esc).join(', ')}.</p>` : ''}
+        <div class="guest-box">
+          <h2>Без кабінету</h2>
+          <p>Можна тренуватися одразу, без імені й пароля. Прогрес гостя зберігається лише в цьому браузері; створити кабінет і перенести в нього прогрес можна будь-коли.</p>
+          <p><button type="button" class="btn" id="auth-guest">${guest ? 'Продовжити як гість' : 'Увійти як гість'}</button></p>
+        </div>
       </section>`;
 
     $$('[data-mode]', root).forEach((b) => b.addEventListener('click', () => {
@@ -87,6 +95,11 @@ export async function auth(app, root) {
       found = null;
       draw('', { name: $('#auth-name', root)?.value || keep.name || '' });
     }));
+    $('#auth-guest', root).addEventListener('click', () => {
+      enterGuest(app.root, Date.now());
+      app.signedIn('#/');
+      announce('Ти ввійшов як гість. Прогрес зберігається лише в цьому браузері.');
+    });
     $('#auth-retry', root)?.addEventListener('click', async () => {
       online = await app.remote.detect();
       draw(online ? '' : 'Сервер досі недоступний.', { name: $('#auth-name', root)?.value || '' });
@@ -129,7 +142,9 @@ export async function auth(app, root) {
         const problem = checkCredentials(name, pass) || checkRecovery(question, answer);
         if (problem) throw new Error(problem);
         if (online) {
-          app.remoteSignedIn(await app.remote.call('register', { name, password: pass, question, answer, data: app.root.legacy }));
+          const session = await app.remote.call('register', { name, password: pass, question, answer, data: carriedData(app.root) });
+          dropGuest(app.root);
+          app.remoteSignedIn(session);
         } else {
           await createAccount(app.root, name, pass, Date.now(), { question, answer });
           app.signedIn('#/');
@@ -172,6 +187,7 @@ export async function auth(app, root) {
 export function cabinet(app, root) {
   const user = currentUser(app.root);
   const remote = isRemote(user);
+  const guest = isGuest(user);
   const game = app.state.game;
   const g = gradeFor(game.xp);
   const pct = Math.round(g.progress * 100);
@@ -196,6 +212,10 @@ export function cabinet(app, root) {
 
   root.innerHTML = `
     <h1>Кабінет · ${esc(user.name)}</h1>
+    ${guest ? `<section class="card next-card" id="guest-cta"><h2>Ти тренуєшся як гість</h2>
+      <p>Прогрес, звання й сертифікати гостя зберігаються лише в цьому браузері: з іншого комп’ютера їх не видно, а якщо очистити дані браузера — вони зникнуть. У сертифікаті буде ім’я «Гість».</p>
+      <p>Створи кабінет — потрібні лише ім’я, пароль і секретне питання. Увесь поточний прогрес перейде в нього.</p>
+      <p><button type="button" class="btn btn-primary" id="guest-create">Створити кабінет і зберегти прогрес</button></p></section>` : ''}
     <section class="card grade-card" aria-labelledby="grade-h">
       <h2 id="grade-h">Звання: ${esc(g.grade.name)}</h2>
       <p>${esc(g.grade.about)}</p>
@@ -226,7 +246,7 @@ export function cabinet(app, root) {
     </section>
     <section class="card"><h2>Курси</h2><ul class="plain">${langs}</ul></section>
     ${statsHtml(app)}
-    <section class="card"><h2>Керування кабінетом</h2>
+    <section class="card"${guest ? ' hidden' : ''}><h2>Керування кабінетом</h2>
       <p class="muted" id="cab-where">${where} Звання й досягнення — особисті: рейтингу між користувачами немає.</p>
       <p class="notice" id="cab-msg" role="alert" hidden></p>
       <form id="cab-pass" class="form" novalidate>
@@ -295,6 +315,7 @@ export function cabinet(app, root) {
   });
 
   $('#cab-logout', root).addEventListener('click', () => app.signOut());
+  $('#guest-create', root)?.addEventListener('click', () => { app.authMode = 'create'; app.signOut(); });
   $('#cab-delete-form', root).addEventListener('submit', async (e) => {
     e.preventDefault();
     try {

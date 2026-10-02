@@ -278,3 +278,7 @@ details summary { cursor: pointer; font-weight: 600; padding: .3rem 0; }
 .sync { font-size: .8rem; padding: .1rem .5rem; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); white-space: nowrap; }
 .sync[data-sync="saved"] { color: var(--ok); border-color: var(--ok); }
 .sync[data-sync="offline"] { color: var(--warn); border-color: var(--warn); background: var(--warn-bg); }
+
+/* Гість */
+.guest-box { margin-top: 1.2rem; padding-top: .4rem; border-top: 1px solid var(--line); }
+.sync[data-sync="guest"] { color: var(--warn); border-color: var(--warn); }

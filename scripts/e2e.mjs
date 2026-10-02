@@ -386,6 +386,44 @@ try {
   assert.equal(await js("soloApp.state.profiles.uk.lessons['s1-fj'].done"), true, 'український прогрес не зачеплено');
   step('англійська розкладка працює, профілі мов незалежні');
 
+  // 8а. Гість: без кабінету; потім прогрес гостя переходить до нового кабінету.
+  await click('#logout');
+  await waitFor("document.querySelector('#auth-guest')", 'екран входу з кнопкою гостя');
+  assert.match(await text('#auth-guest'), /Увійти як гість/);
+  await click('#auth-guest');
+  await waitFor("document.querySelector('[data-lang]')", 'гість: вибір мови');
+  assert.match(await text('#user-link'), /Гість · Новачок/);
+  assert.equal(await text('#sync-state'), 'лише цей браузер');
+  await click('[data-lang="en"]');
+  await waitFor("document.querySelector('[data-start=\"zero\"]')");
+  await click('[data-start="zero"]');
+  await waitFor("document.querySelector('#go-next')");
+  await click('#go-next');
+  await waitFor("document.querySelector('[data-phase=\"test\"]')");
+  await click('[data-phase="test"]');
+  await waitFor("document.querySelector('#typebox')");
+  await typeText(await exerciseText(), { delay: 2 });
+  await waitFor("document.querySelector('.results')");
+  const guestXp = await js('soloApp.state.game.xp');
+  assert.ok(guestXp > 0, 'гість заробляє досвід');
+  await send('Page.reload');
+  await waitFor("window.soloApp && soloApp.state && document.querySelector('#user-link').textContent.includes('Гість')", 'гість після перезавантаження');
+  assert.equal(await js('soloApp.state.game.xp'), guestXp);
+  await goto('#/cabinet');
+  await waitFor("document.querySelector('#guest-create')", 'пропозиція створити кабінет');
+  await shot('10b-guest');
+  await click('#guest-create');
+  await waitFor("document.querySelector('#auth-question') && document.querySelector('#auth-carry')", 'форма нового кабінету з перенесенням прогресу');
+  await submitAuth({ name: 'Іван', pass: 'пароль-івана', pass2: 'пароль-івана', question: 'Улюблене місто?', answer: 'Львів' });
+  await waitFor("window.soloApp.state && document.querySelector('#user-link').textContent.includes('Іван')", 'кабінет із прогресом гостя');
+  assert.equal(await js('soloApp.state.game.xp'), guestXp, 'досвід гостя перейшов у кабінет');
+  assert.equal(await js("soloApp.state.settings.lang"), 'en');
+  assert.equal(await js("JSON.parse(localStorage.getItem('solo-accounts-v1')).users.guest === undefined"), true, 'гостьовий профіль прибрано');
+  await waitFor("document.querySelector('#sync-state').textContent === 'збережено'", 'прогрес гостя збережено на сервері');
+  await goto('#/');
+  await waitFor("document.querySelector('#go-next')");
+  step('гість: тренування без кабінету, прогрес переживає перезавантаження і переходить до нового кабінету');
+
   // 9. Вузький екран і керування з клавіатури.
   await send('Emulation.setDeviceMetricsOverride', { width: 390, height: 800, deviceScaleFactor: 2, mobile: true });
   await goto('#/');

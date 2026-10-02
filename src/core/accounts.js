@@ -86,7 +86,7 @@ export async function createAccount(root, name, password, now, { iterations = PB
     name: normalizeName(name), salt, iterations,
     hash: await hashPassword(password, salt, iterations),
     createdAt: now,
-    data: root.legacy || emptyState(),
+    data: carriedData(root) || emptyState(),
   };
   if (question !== null) {
     user.question = String(question).trim();
@@ -94,7 +94,7 @@ export async function createAccount(root, name, password, now, { iterations = PB
     user.aHash = await hashPassword(normalizeAnswer(answer), user.aSalt, iterations);
   }
   root.users[id] = user;
-  root.legacy = null;
+  dropGuest(root);
   root.current = id;
   return id;
 }
@@ -162,6 +162,31 @@ export function deleteAccount(root, id) {
   if (root.current === id) root.current = null;
 }
 
+// --- Гість: без кабінету й пароля ---------------------------------------------------------
+
+export const GUEST_ID = 'guest';
+export const GUEST_NAME = 'Гість';
+
+/** Вхід без кабінету. Прогрес гостя лежить лише в цьому браузері й зберігається між відвідинами. */
+export function enterGuest(root, now) {
+  root.users[GUEST_ID] ??= { name: GUEST_NAME, guest: true, createdAt: now, data: root.legacy || emptyState() };
+  root.legacy = null;
+  root.current = GUEST_ID;
+  return GUEST_ID;
+}
+
+export const isGuest = (user) => user?.guest === true;
+export const guestOf = (root) => root.users[GUEST_ID] || null;
+
+/** Прогрес, який перейде до нового кабінету: гостьовий або збережений до появи кабінетів. */
+export const carriedData = (root) => guestOf(root)?.data || root.legacy || null;
+
+/** Після створення кабінету гостьовий профіль більше не потрібен. */
+export function dropGuest(root) {
+  delete root.users[GUEST_ID];
+  root.legacy = null;
+}
+
 // --- Серверні кабінети: копія в браузері --------------------------------------------------
 
 /** Зберігає сеанс серверного кабінету в браузері й входить у нього. */
@@ -182,7 +207,7 @@ export function adoptRemote(root, { name, token, data, updatedAt }, now) {
 export const isRemote = (user) => Boolean(user?.remote);
 export const currentUser = (root) => (root.current ? root.users[root.current] || null : null);
 /** Імена локальних кабінетів цього пристрою. */
-export const listNames = (root) => Object.values(root.users).filter((u) => !u.remote).map((u) => u.name).sort((a, b) => a.localeCompare(b, 'uk'));
+export const listNames = (root) => Object.values(root.users).filter((u) => !u.remote && !u.guest).map((u) => u.name).sort((a, b) => a.localeCompare(b, 'uk'));
 
 // --- Сховище браузера --------------------------------------------------------------------------
 
@@ -197,6 +222,12 @@ export function loadRoot(storage) {
     const raw = JSON.parse(storage.getItem(ACCOUNTS_KEY) || 'null');
     if (isObject(raw) && raw.version === ROOT_VERSION && isObject(raw.users)) {
       for (const [id, u] of Object.entries(raw.users)) {
+        if (id === GUEST_ID && isObject(u) && u.guest === true) {
+          let data;
+          try { data = validateState(u.data); } catch { data = emptyState(); }
+          root.users[GUEST_ID] = { name: GUEST_NAME, guest: true, createdAt: typeof u.createdAt === 'number' ? u.createdAt : null, data };
+          continue;
+        }
         if (!id.startsWith('u:') || !isObject(u) || typeof u.name !== 'string') continue;
         const remote = isObject(u.remote) && typeof u.remote.token === 'string' && u.remote.token
           ? { token: u.remote.token, updatedAt: Number.isFinite(u.remote.updatedAt) ? u.remote.updatedAt : null, dirty: u.remote.dirty === true }
