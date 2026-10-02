@@ -72,6 +72,11 @@ export async function auth(app, root) {
         <h1 id="auth-h">${title}</h1>
         <p>Соло — тренажер сенсорного набору. Кабінет зберігає твій прогрес, звання, досягнення й сертифікати.
           <a href="#/guide">Навіщо це потрібно і як навчитися — у посібнику.</a></p>
+        <div class="guest-box">
+          <button type="button" class="btn btn-primary" id="auth-guest">${guest ? 'Продовжити як гість' : 'Увійти як гість'}</button>
+          <p>Одразу до вправ, без імені й пароля. Прогрес гостя зберігається лише в цьому браузері; створити кабінет і перенести в нього прогрес можна будь-коли.</p>
+        </div>
+        <h2 class="auth-or">Або з кабінетом</h2>
         ${banner}${legacy}
         <div class="phase-tabs" role="group" aria-label="Вхід, новий кабінет або відновлення пароля">
           <button type="button" data-mode="login" aria-pressed="${mode === 'login'}">Увійти</button>
@@ -84,11 +89,6 @@ export async function auth(app, root) {
           <p><button type="submit" class="btn btn-primary" id="auth-submit">${submit}</button></p>
         </form>
         ${!online && localNames.length ? `<p class="muted">Локальні кабінети на цьому пристрої: ${localNames.map(esc).join(', ')}.</p>` : ''}
-        <div class="guest-box">
-          <h2>Без кабінету</h2>
-          <p>Можна тренуватися одразу, без імені й пароля. Прогрес гостя зберігається лише в цьому браузері; створити кабінет і перенести в нього прогрес можна будь-коли.</p>
-          <p><button type="button" class="btn" id="auth-guest">${guest ? 'Продовжити як гість' : 'Увійти як гість'}</button></p>
-        </div>
       </section>`;
 
     $$('[data-mode]', root).forEach((b) => b.addEventListener('click', () => {

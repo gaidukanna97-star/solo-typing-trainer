@@ -218,14 +218,14 @@ input[type="checkbox"] { width: 1.15rem; height: 1.15rem; vertical-align: -3px; 
 :root[data-motion="on"] .btn, :root[data-motion="on"] .lesson, :root[data-motion="on"] .kb-key, :root[data-motion="on"] .c { transition: background-color .12s, border-color .12s, outline-color .12s; }
 :root[data-motion="on"] { scroll-behavior: smooth; }
 @media (prefers-reduced-motion: reduce) {
-  :root[data-motion="on"] * { transition: none !important; scroll-behavior: auto !important; }
+  :root[data-motion="on"], :root[data-motion="on"] * { transition: none !important; scroll-behavior: auto !important; }
 }
 
 /* Кабінет і гейміфікація */
 .user { display: inline-flex; align-items: center; gap: .5rem; }
 .user-link { font-weight: 600; color: var(--text); text-decoration: none; padding: .35rem .6rem; border-radius: 7px; }
 .user-link:hover { background: var(--bg); }
-.btn-small { min-height: 36px; padding: .3rem .7rem; font-size: .92rem; }
+.btn-small { min-height: 44px; padding: .3rem .8rem; font-size: .92rem; }
 input[type="text"], input[type="password"] { font: inherit; color: var(--text); background: var(--surface); border: 1px solid var(--muted); border-radius: 8px; padding: .5rem .6rem; width: min(100%, 22rem); min-height: 44px; }
 .section-title { font-size: 1.45rem; margin-top: 2rem; }
 .grade-card { border-left: 6px solid var(--accent); }
@@ -280,7 +280,9 @@ details summary { cursor: pointer; font-weight: 600; padding: .3rem 0; }
 .sync[data-sync="offline"] { color: var(--warn); border-color: var(--warn); background: var(--warn-bg); }
 
 /* Гість */
-.guest-box { margin-top: 1.2rem; padding-top: .4rem; border-top: 1px solid var(--line); }
+.guest-box { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem 1rem; margin: .8rem 0 0; padding: .8rem 1rem; border-radius: 10px; border: 1px solid var(--line); background: var(--cur-bg); }
+.guest-box p { margin: 0; flex: 1 1 260px; }
+.auth-or { font-size: 1.05rem; margin: 1.2rem 0 .2rem; }
 .sync[data-sync="guest"] { color: var(--warn); border-color: var(--warn); }
 
 /* Посібник */

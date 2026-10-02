@@ -117,6 +117,8 @@ try {
   await send('Page.enable');
   await send('Page.navigate', { url: `http://127.0.0.1:${PORT}/` });
   await waitFor("document.querySelector('#auth-form')", 'екран входу');
+  assert.equal(await js("document.querySelector('#auth-guest').getBoundingClientRect().bottom < innerHeight"), true, 'гостьовий вхід видно без прокручування');
+  assert.equal(await js("document.querySelector('#auth-guest').compareDocumentPosition(document.querySelector('#auth-form')) & Node.DOCUMENT_POSITION_FOLLOWING") > 0, true, 'гостьовий вхід — перед формою');
   await shot('00-auth');
 
   // Посібник відкритий без входу.
@@ -445,7 +447,13 @@ try {
   await sleep(200);
   assert.equal(await js('document.documentElement.scrollWidth <= window.innerWidth'), true, 'немає горизонтального прокручування');
   await shot('11-mobile');
+  assert.equal(await js("Math.min(...[...document.querySelectorAll('.btn, .phase-tabs button')].filter((e) => e.offsetParent).map((e) => e.getBoundingClientRect().height)) >= 44"), true, 'кнопки не менші за 44 px');
   await send('Emulation.clearDeviceMetricsOverride');
+  // Системне налаштування «менше руху» вимикає переходи й плавне прокручування.
+  await send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] });
+  assert.equal(await js("getComputedStyle(document.documentElement).scrollBehavior + ' ' + getComputedStyle(document.querySelector('.btn')).transitionDuration"), 'auto 0s');
+  await send('Emulation.setEmulatedMedia', { features: [] });
+  assert.equal(await js("getComputedStyle(document.documentElement).scrollBehavior"), 'smooth');
   await js("document.querySelector('.skip').focus()");
   await key('Tab');
   assert.equal(await js("document.activeElement.classList.contains('brand')"), true, 'Tab переходить по елементах');
