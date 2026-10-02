@@ -1,93 +1,177 @@
-// Екран входу та сторінка особистого кабінету (звання, досягнення, статистика).
+// Екран входу (вхід, новий кабінет, відновлення пароля) та сторінка особистого кабінету.
 
 import {
-  createAccount, login, deleteAccount, changePassword, listNames, currentUser, userId, NAME_MAX, PASSWORD_MIN,
+  createAccount, login, deleteAccount, changePassword, listNames, currentUser, userId, isRemote,
+  localQuestion, resetLocalPassword, setLocalRecovery, verifyLocalPassword, checkCredentials, checkRecovery,
+  NAME_MAX, PASSWORD_MIN, QUESTION_MAX, QUESTION_EXAMPLES,
 } from '../core/accounts.js';
+import { RemoteError, NetworkError } from '../core/remote.js';
 import { GRADES, ACHIEVEMENTS, XP, gradeFor, dayStreak } from '../core/gamification.js';
 import { statsHtml, LANG_LABEL } from './views.js';
 import { certListHtml, tiersTableHtml } from './exam-views.js';
 import { esc, $, $$, announce } from './dom.js';
 
-export function auth(app, root) {
-  const names = listNames(app.root);
-  let mode = names.length ? 'login' : 'create';
+const NO_LINK = 'Немає зв’язку із сервером. Перевір інтернет і спробуй ще раз.';
+const errorText = (err) => (err instanceof NetworkError ? NO_LINK : err.message);
 
-  const draw = (message = '', keepName = '') => {
-    const create = mode === 'create';
-    const legacy = create && app.root.legacy
-      ? '<p class="notice">У цьому браузері знайдено прогрес, збережений раніше. Він перейде до кабінету, який ти зараз створиш.</p>'
-      : '';
-    const known = !create && names.length ? `
-        <p class="muted">Кабінети на цьому пристрої: ${names.map(esc).join(', ')}.</p>
-        <details><summary>Забув пароль?</summary>
-          <p>Пароль не зберігається й не відновлюється. Можна лише видалити кабінет разом із прогресом: введи його ім’я вище й натисни кнопку.</p>
-          <p><button type="button" class="btn btn-danger" id="auth-delete">Видалити кабінет із цим іменем</button></p>
-        </details>` : '';
+export async function auth(app, root) {
+  root.innerHTML = '<section class="card narrow"><h1>Соло</h1><p class="muted" role="status">Перевіряємо зв’язок із сервером кабінетів…</p></section>';
+  let online = await app.ready;
+  if (app.state) return; // поки чекали, вхід уже відбувся
+  const localNames = listNames(app.root);
+  let mode = 'login'; // login | create | forgot
+  let found = null; // { name, question, local } — крок 2 відновлення пароля
+  const initial = app.authMessage;
+  app.authMessage = '';
+
+  const draw = (message = '', keep = {}) => {
+    const title = { login: 'Вхід до кабінету', create: 'Новий кабінет', forgot: 'Відновлення пароля' }[mode];
+    const banner = online
+      ? '<p class="notice">Кабінет зберігається на сервері: увійти можна з будь-якого комп’ютера, прогрес підтягнеться сам.</p>'
+      : `<p class="notice notice-warn">Сервер кабінетів зараз недоступний. Можна створити локальний кабінет — він працюватиме лише в цьому браузері.
+          <button type="button" class="btn btn-small" id="auth-retry">Перевірити зв’язок ще раз</button></p>`;
+    const legacy = mode === 'create' && app.root.legacy
+      ? '<p class="notice">У цьому браузері знайдено прогрес, збережений раніше. Він перейде до кабінету, який ти зараз створиш.</p>' : '';
+    const nameField = `<p><label for="auth-name">Ім’я</label><br>
+      <input type="text" id="auth-name" maxlength="${NAME_MAX}" autocomplete="username" value="${esc(keep.name || '')}"></p>`;
+
+    let fields;
+    let submit;
+    if (mode === 'login') {
+      submit = 'Увійти';
+      fields = `${nameField}
+        <p><label for="auth-pass">Пароль</label><br><input type="password" id="auth-pass" autocomplete="current-password"></p>`;
+    } else if (mode === 'create') {
+      submit = 'Створити кабінет';
+      fields = `${nameField}
+        <p><label for="auth-pass">Пароль</label><br><input type="password" id="auth-pass" autocomplete="new-password"></p>
+        <p><label for="auth-pass2">Пароль ще раз</label><br><input type="password" id="auth-pass2" autocomplete="new-password"></p>
+        <p><label for="auth-question">Секретне питання</label><br>
+          <input type="text" id="auth-question" maxlength="${QUESTION_MAX}" list="auth-questions" value="${esc(keep.question || '')}" autocomplete="off">
+          <datalist id="auth-questions">${QUESTION_EXAMPLES.map((q) => `<option value="${esc(q)}">`).join('')}</datalist></p>
+        <p><label for="auth-answer">Відповідь</label><br><input type="text" id="auth-answer" autocomplete="off"></p>
+        <p class="muted">Пароль — щонайменше ${PASSWORD_MIN} символи. Секретне питання потрібне, щоб відновити пароль, якщо забудеш:
+          обери таке, відповідь на яке знаєш лише ти. Пошта й телефон не потрібні.</p>`;
+    } else if (!found) {
+      submit = 'Показати секретне питання';
+      fields = `<p>Введи ім’я кабінету — покажемо секретне питання, яке ти задав(-ла) під час створення.</p>${nameField}`;
+    } else {
+      submit = 'Задати новий пароль';
+      fields = `<p>Кабінет: <strong>${esc(found.name)}</strong></p>
+        <p class="notice"><strong>Секретне питання:</strong> <span id="auth-shown-question">${esc(found.question)}</span></p>
+        <p><label for="auth-answer">Відповідь</label><br><input type="text" id="auth-answer" autocomplete="off"></p>
+        <p><label for="auth-pass">Новий пароль</label><br><input type="password" id="auth-pass" autocomplete="new-password"></p>
+        <p class="muted">Регістр і зайві пробіли у відповіді не мають значення. Після п’яти невдалих спроб — пауза на 10 хвилин.</p>`;
+    }
+
     root.innerHTML = `
       <section class="card narrow" aria-labelledby="auth-h">
-        <h1 id="auth-h">${create ? 'Новий кабінет' : 'Вхід до кабінету'}</h1>
-        <p>Соло — тренажер сенсорного набору. Кабінет зберігає твій прогрес, звання й досягнення. Потрібні лише ім’я та пароль — без пошти й телефону.</p>
-        ${legacy}
-        <div class="phase-tabs" role="group" aria-label="Вхід або новий кабінет">
-          <button type="button" data-mode="login" aria-pressed="${!create}">Увійти</button>
-          <button type="button" data-mode="create" aria-pressed="${create}">Створити кабінет</button>
+        <h1 id="auth-h">${title}</h1>
+        <p>Соло — тренажер сенсорного набору. Кабінет зберігає твій прогрес, звання, досягнення й сертифікати.</p>
+        ${banner}${legacy}
+        <div class="phase-tabs" role="group" aria-label="Вхід, новий кабінет або відновлення пароля">
+          <button type="button" data-mode="login" aria-pressed="${mode === 'login'}">Увійти</button>
+          <button type="button" data-mode="create" aria-pressed="${mode === 'create'}">Створити кабінет</button>
+          <button type="button" data-mode="forgot" aria-pressed="${mode === 'forgot'}">Забув пароль</button>
         </div>
         <form id="auth-form" class="form" novalidate>
-          <p><label for="auth-name">Ім’я</label><br>
-            <input type="text" id="auth-name" maxlength="${NAME_MAX}" autocomplete="username" value="${esc(keepName)}"></p>
-          <p><label for="auth-pass">Пароль</label><br>
-            <input type="password" id="auth-pass" autocomplete="${create ? 'new-password' : 'current-password'}"></p>
-          ${create ? `<p><label for="auth-pass2">Пароль ще раз</label><br>
-            <input type="password" id="auth-pass2" autocomplete="new-password"></p>
-          <p class="muted">Щонайменше ${PASSWORD_MIN} символи. Пароль не можна відновити — запам’ятай його.</p>` : ''}
+          ${fields}
           <p class="notice notice-error" id="auth-msg" role="alert"${message ? '' : ' hidden'}>${esc(message)}</p>
-          <p><button type="submit" class="btn btn-primary" id="auth-submit">${create ? 'Створити кабінет' : 'Увійти'}</button></p>
+          <p><button type="submit" class="btn btn-primary" id="auth-submit">${submit}</button></p>
         </form>
-        ${known}
-        <p class="muted">Кабінет існує лише в цьому браузері: даних немає на сервері, тож з іншого пристрою в нього не ввійти.
-          Пароль захищає від випадкового входу іншої людини за цим комп’ютером, але не шифрує дані.
-          Перенести прогрес на інший пристрій можна файлом у «Налаштуваннях».</p>
+        ${!online && localNames.length ? `<p class="muted">Локальні кабінети на цьому пристрої: ${localNames.map(esc).join(', ')}.</p>` : ''}
       </section>`;
 
     $$('[data-mode]', root).forEach((b) => b.addEventListener('click', () => {
       mode = b.dataset.mode;
-      draw('', $('#auth-name', root).value);
+      found = null;
+      draw('', { name: $('#auth-name', root)?.value || keep.name || '' });
     }));
-    $('#auth-form', root).addEventListener('submit', async (e) => {
+    $('#auth-retry', root)?.addEventListener('click', async () => {
+      online = await app.remote.detect();
+      draw(online ? '' : 'Сервер досі недоступний.', { name: $('#auth-name', root)?.value || '' });
+    });
+    $('#auth-form', root).addEventListener('submit', (e) => {
       e.preventDefault();
-      const name = $('#auth-name', root).value;
-      const pass = $('#auth-pass', root).value;
-      $('#auth-submit', root).disabled = true;
-      try {
-        if (create) {
-          if (pass !== $('#auth-pass2', root).value) throw new Error('Паролі не збігаються.');
-          await createAccount(app.root, name, pass, Date.now());
+      submitForm();
+    });
+    (found ? $('#auth-answer', root) : $('#auth-name', root)).focus();
+  };
+
+  const value = (id) => $(`#${id}`, root)?.value ?? '';
+
+  async function submitForm() {
+    const name = found ? found.name : value('auth-name');
+    const pass = value('auth-pass');
+    const keep = { name, question: value('auth-question') };
+    $('#auth-submit', root).disabled = true;
+    try {
+      if (mode === 'login') {
+        if (online) {
+          try {
+            app.remoteSignedIn(await app.remote.call('login', { name, password: pass }));
+          } catch (err) {
+            // Кабінет, створений без сервера, лишається доступним на цьому пристрої.
+            const local = app.root.users[userId(name)];
+            if (!(err instanceof RemoteError && err.code === 'bad_login' && local && !isRemote(local))) throw err;
+            await login(app.root, name, pass);
+            app.signedIn('#/');
+          }
         } else {
           await login(app.root, name, pass);
+          app.signedIn('#/');
         }
-        app.signedIn('#/');
-        announce(create ? 'Кабінет створено.' : 'Вхід виконано.');
-      } catch (err) {
-        draw(err.message, name);
-        $('#auth-pass', root).focus();
+        announce('Вхід виконано.');
+      } else if (mode === 'create') {
+        const question = value('auth-question');
+        const answer = value('auth-answer');
+        if (pass !== value('auth-pass2')) throw new Error('Паролі не збігаються.');
+        const problem = checkCredentials(name, pass) || checkRecovery(question, answer);
+        if (problem) throw new Error(problem);
+        if (online) {
+          app.remoteSignedIn(await app.remote.call('register', { name, password: pass, question, answer, data: app.root.legacy }));
+        } else {
+          await createAccount(app.root, name, pass, Date.now(), { question, answer });
+          app.signedIn('#/');
+        }
+        announce('Кабінет створено.');
+      } else if (!found) {
+        if (online) {
+          try {
+            const res = await app.remote.call('question', { name });
+            found = { name: res.name, question: res.question, local: false };
+          } catch (err) {
+            const q = localQuestion(app.root, name);
+            if (!(err instanceof RemoteError) || !q) throw err;
+            found = { name: app.root.users[userId(name)].name, question: q, local: true };
+          }
+        } else {
+          const q = localQuestion(app.root, name);
+          if (!q) throw new Error('Локального кабінету з таким іменем і секретним питанням на цьому пристрої немає.');
+          found = { name: app.root.users[userId(name)].name, question: q, local: true };
+        }
+        draw();
+      } else {
+        const answer = value('auth-answer');
+        if (found.local) {
+          await resetLocalPassword(app.root, found.name, answer, pass);
+          app.signedIn('#/');
+        } else {
+          app.remoteSignedIn(await app.remote.call('reset', { name: found.name, answer, password: pass }));
+        }
+        announce('Пароль змінено, вхід виконано.');
       }
-    });
-    $('#auth-delete', root)?.addEventListener('click', () => {
-      const name = $('#auth-name', root).value;
-      const user = app.root.users[userId(name)];
-      if (!user) return draw('Кабінету з таким іменем на цьому пристрої немає.', name);
-      if (!confirm(`Видалити кабінет «${user.name}» разом з усім прогресом? Цю дію не можна скасувати.`)) return;
-      deleteAccount(app.root, userId(name));
-      app.save();
-      app.render();
-    });
-    $('#auth-name', root).focus();
-  };
-  draw();
+    } catch (err) {
+      draw(errorText(err), keep);
+    }
+  }
+
+  draw(initial);
 }
 
 export function cabinet(app, root) {
   const user = currentUser(app.root);
+  const remote = isRemote(user);
   const game = app.state.game;
   const g = gradeFor(game.xp);
   const pct = Math.round(g.progress * 100);
@@ -106,6 +190,9 @@ export function cabinet(app, root) {
     const done = Object.values(p.lessons).filter((x) => x.done).length;
     return `<li><strong>${LANG_LABEL[l]}</strong>: ${p.createdAt ? `закріплено вправ — ${done}, залікових спроб — ${p.history.length}` : 'ще не розпочато'}</li>`;
   }).join('');
+  const where = remote
+    ? 'Кабінет зберігається на сервері: увійти можна з будь-якого комп’ютера за іменем і паролем. У цьому браузері лежить копія, тож тренажер працює й без мережі, а прогрес відправляється, щойно з’явиться зв’язок.'
+    : 'Це локальний кабінет: він зберігається лише в цьому браузері, бо під час створення сервер був недоступний.';
 
   root.innerHTML = `
     <h1>Кабінет · ${esc(user.name)}</h1>
@@ -140,16 +227,29 @@ export function cabinet(app, root) {
     <section class="card"><h2>Курси</h2><ul class="plain">${langs}</ul></section>
     ${statsHtml(app)}
     <section class="card"><h2>Керування кабінетом</h2>
-      <p class="muted">Кабінет зберігається лише в цьому браузері. Звання й досягнення — особисті: рейтингу між користувачами немає.</p>
+      <p class="muted" id="cab-where">${where} Звання й досягнення — особисті: рейтингу між користувачами немає.</p>
+      <p class="notice" id="cab-msg" role="alert" hidden></p>
       <form id="cab-pass" class="form" novalidate>
         <h3>Змінити пароль</h3>
         <p><label for="cab-old">Поточний пароль</label><br><input type="password" id="cab-old" autocomplete="current-password"></p>
         <p><label for="cab-new">Новий пароль</label><br><input type="password" id="cab-new" autocomplete="new-password"></p>
-        <p class="notice" id="cab-msg" role="alert" hidden></p>
         <p><button type="submit" class="btn">Змінити пароль</button></p>
       </form>
-      <p><button type="button" class="btn" id="cab-logout">Вийти з кабінету</button>
-        <button type="button" class="btn btn-danger" id="cab-delete">Видалити кабінет</button></p>
+      <form id="cab-recovery" class="form" novalidate>
+        <h3>Змінити секретне питання</h3>
+        <p><label for="cab-q">Нове секретне питання</label><br><input type="text" id="cab-q" maxlength="${QUESTION_MAX}" list="cab-questions" autocomplete="off">
+          <datalist id="cab-questions">${QUESTION_EXAMPLES.map((q) => `<option value="${esc(q)}">`).join('')}</datalist></p>
+        <p><label for="cab-a">Відповідь</label><br><input type="text" id="cab-a" autocomplete="off"></p>
+        <p><label for="cab-q-pass">Пароль для підтвердження</label><br><input type="password" id="cab-q-pass" autocomplete="current-password"></p>
+        <p><button type="submit" class="btn">Зберегти питання</button></p>
+      </form>
+      <form id="cab-delete-form" class="form" novalidate>
+        <h3>Вихід і видалення</h3>
+        <p><button type="button" class="btn" id="cab-logout">Вийти з кабінету</button></p>
+        <p><label for="cab-del-pass">Щоб видалити кабінет разом з усім прогресом${remote ? ' із сервера' : ''}, введи пароль</label><br>
+          <input type="password" id="cab-del-pass" autocomplete="current-password"></p>
+        <p><button type="submit" class="btn btn-danger" id="cab-delete">Видалити кабінет</button></p>
+      </form>
     </section>`;
 
   const msg = (text, kind = '') => {
@@ -157,23 +257,56 @@ export function cabinet(app, root) {
     el.hidden = false;
     el.className = `notice ${kind}`;
     el.textContent = text;
+    el.scrollIntoView({ block: 'nearest' });
   };
+  const val = (id) => $(`#${id}`, root).value;
+  const clear = (...ids) => ids.forEach((id) => { $(`#${id}`, root).value = ''; });
+
   $('#cab-pass', root).addEventListener('submit', async (e) => {
     e.preventDefault();
     try {
-      await changePassword(app.root, app.root.current, $('#cab-old', root).value, $('#cab-new', root).value);
-      app.save();
-      $('#cab-old', root).value = '';
-      $('#cab-new', root).value = '';
-      msg('Пароль змінено.');
+      if (remote) {
+        const res = await app.remote.call('password', { token: user.remote.token, oldPassword: val('cab-old'), password: val('cab-new') });
+        user.remote.token = res.token;
+      } else {
+        await changePassword(app.root, app.root.current, val('cab-old'), val('cab-new'));
+      }
+      app.persist();
+      clear('cab-old', 'cab-new');
+      msg(remote ? 'Пароль змінено. На інших пристроях доведеться ввійти ще раз.' : 'Пароль змінено.');
     } catch (err) {
-      msg(err.message, 'notice-error');
+      msg(errorText(err), 'notice-error');
     }
   });
+
+  $('#cab-recovery', root).addEventListener('submit', async (e) => {
+    e.preventDefault();
+    try {
+      const problem = checkRecovery(val('cab-q'), val('cab-a'));
+      if (problem) throw new Error(problem);
+      if (remote) await app.remote.call('recovery', { token: user.remote.token, password: val('cab-q-pass'), question: val('cab-q'), answer: val('cab-a') });
+      else await setLocalRecovery(app.root, app.root.current, val('cab-q-pass'), val('cab-q'), val('cab-a'));
+      app.persist();
+      clear('cab-q', 'cab-a', 'cab-q-pass');
+      msg('Секретне питання збережено.');
+    } catch (err) {
+      msg(errorText(err), 'notice-error');
+    }
+  });
+
   $('#cab-logout', root).addEventListener('click', () => app.signOut());
-  $('#cab-delete', root).addEventListener('click', () => {
-    if (!confirm(`Видалити кабінет «${user.name}» разом з усім прогресом? Цю дію не можна скасувати.`)) return;
-    deleteAccount(app.root, app.root.current);
-    app.signedIn('#/');
+  $('#cab-delete-form', root).addEventListener('submit', async (e) => {
+    e.preventDefault();
+    try {
+      const password = val('cab-del-pass');
+      if (!remote && !(await verifyLocalPassword(app.root, app.root.current, password))) throw new Error('Пароль невірний.');
+      if (!confirm(`Видалити кабінет «${user.name}» разом з усім прогресом? Цю дію не можна скасувати.`)) return;
+      if (remote) await app.remote.call('delete', { token: user.remote.token, password });
+      deleteAccount(app.root, app.root.current);
+      app.signedIn('#/');
+      announce('Кабінет видалено.');
+    } catch (err) {
+      msg(errorText(err), 'notice-error');
+    }
   });
 }

@@ -27,7 +27,7 @@ const shots = process.env.SHOTS_DIR || null;
 if (shots) mkdirSync(shots, { recursive: true });
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-const server = await startServer(PORT);
+const server = await startServer(PORT, { api: 'memory' }); // сервер кабінетів у пам'яті: продакшен тести не чіпають
 const profileDir = mkdtempSync(join(tmpdir(), 'solo-e2e-'));
 const browser = spawn(browserPath, [
   '--headless=new', `--remote-debugging-port=${DEBUG_PORT}`, `--user-data-dir=${profileDir}`,
@@ -64,6 +64,8 @@ try {
     } else if (msg.method === 'Runtime.consoleAPICalled' && msg.params.type === 'error') {
       errors.push(msg.params.args.map((a) => a.value ?? a.description).join(' '));
     } else if (msg.method === 'Log.entryAdded' && msg.params.entry.level === 'error') {
+      // Відмови сервера кабінетів (хибний пароль тощо) — очікувана частина сценарію.
+      if ((msg.params.entry.url || '').endsWith('/api/account')) return;
       errors.push(`${msg.params.entry.text} ${msg.params.entry.url || ''}`);
     }
   };
@@ -117,24 +119,30 @@ try {
   await waitFor("document.querySelector('#auth-form')", 'екран входу');
   await shot('00-auth');
 
-  // 0. Кабінет: лише ім'я та пароль.
+  // 0. Кабінет на сервері: ім'я, пароль і секретне питання — без пошти й телефону.
   const fill = (id, value) => js(`document.querySelector('#${id}').value = ${JSON.stringify(value)}`);
-  const submitAuth = async (name, pass, pass2) => {
-    await fill('auth-name', name);
-    await fill('auth-pass', pass);
-    if (pass2 !== undefined) await fill('auth-pass2', pass2);
+  const submitAuth = async (fields) => {
+    for (const [id, value] of Object.entries(fields)) await fill(`auth-${id}`, value);
     await click('#auth-submit');
   };
-  assert.match(await text('#auth-h'), /Новий кабінет/);
-  await submitAuth('Оля', 'таємно', 'інакше');
-  await waitFor("!document.querySelector('#auth-msg').hidden");
-  assert.match(await text('#auth-msg'), /Паролі не збігаються/);
-  await submitAuth('Оля', 'таємно', 'таємно');
+  const authError = async (pattern) => {
+    await waitFor("document.querySelector('#auth-msg') && !document.querySelector('#auth-msg').hidden", 'повідомлення про помилку');
+    assert.match(await text('#auth-msg'), pattern);
+  };
+  assert.match(await text('#app'), /увійти можна з будь-якого комп’ютера/);
+  await click('[data-mode="create"]');
+  await waitFor("document.querySelector('#auth-question')");
+  await shot('00b-create');
+  await submitAuth({ name: 'Оля', pass: 'таємно', pass2: 'інакше', question: 'Кличка першого кота?', answer: 'Мурчик' });
+  await authError(/Паролі не збігаються/);
+  await submitAuth({ name: 'Оля', pass: 'таємно', pass2: 'таємно', question: 'Що?', answer: 'Мурчик' });
+  await authError(/Секретне питання має містити/);
+  await submitAuth({ name: 'Оля', pass: 'таємно', pass2: 'таємно', question: 'Кличка першого кота?', answer: 'Мурчик' });
   await waitFor("document.querySelector('[data-lang]')", 'екран вибору мови');
   assert.match(await text('#user-link'), /Оля · Новачок/);
-  assert.equal(await js("!localStorage.getItem('solo-accounts-v1').includes('таємно')"), true, 'пароль не зберігається відкрито');
+  assert.equal(await js("!/таємно|мурчик|\"hash\"/i.test(localStorage.getItem('solo-accounts-v1'))"), true, 'у браузері немає ні пароля, ні відповіді, ні хешів');
   await shot('01-onboarding');
-  step('кабінет створено: ім’я та пароль, без пошти');
+  step('кабінет створено на сервері: ім’я, пароль і секретне питання');
 
   // 1. Новий профіль і вибір української.
   await click('[data-lang="uk"]');
@@ -207,16 +215,40 @@ try {
   // 4а. Вихід, хибний пароль, повторний вхід, кабінет.
   const xp = await js('soloApp.state.game.xp');
   assert.ok(xp >= 85, 'досвід нараховано');
+  await waitFor("document.querySelector('#sync-state').textContent === 'збережено'", 'прогрес збережено на сервері');
   await click('#logout');
   await waitFor("document.querySelector('#auth-form')", 'екран входу після виходу');
   assert.equal(await js("document.querySelector('#user-box').hidden"), true);
+  // Після виходу в браузері не лишається копії кабінету — це й є «інший комп'ютер».
+  assert.equal(await js("Object.keys(JSON.parse(localStorage.getItem('solo-accounts-v1')).users).length"), 0);
   await goto('#/academy');
   await waitFor("document.querySelector('#auth-form')", 'без входу сторінки закриті');
-  await submitAuth('Оля', 'не той пароль');
-  await waitFor("!document.querySelector('#auth-msg').hidden");
-  assert.match(await text('#auth-msg'), /Невірне ім’я або пароль/);
-  await submitAuth('оля', 'таємно');
+  await submitAuth({ name: 'Оля', pass: 'не той пароль' });
+  await authError(/Невірне ім’я або пароль/);
+
+  // Забув пароль: секретне питання → нова відповідь → новий пароль.
+  await click('[data-mode="forgot"]');
+  await waitFor("document.querySelector('#auth-h').textContent.includes('Відновлення')");
+  await submitAuth({ name: 'Невідомий' });
+  await authError(/Кабінету з таким іменем немає/);
+  await submitAuth({ name: 'оля' });
+  await waitFor("document.querySelector('#auth-shown-question')", 'секретне питання');
+  assert.match(await text('#auth-shown-question'), /Кличка першого кота\?/);
+  await shot('05a-forgot');
+  await submitAuth({ answer: 'Барсик', pass: 'новий-пароль' });
+  await authError(/Відповідь на секретне питання невірна/);
+  await submitAuth({ answer: ' мурчик ', pass: 'новий-пароль' });
+  await waitFor("window.soloApp.state && document.querySelector('#user-link').textContent.includes('Оля')", 'вхід після відновлення пароля');
+  assert.equal(await js('soloApp.state.game.xp'), xp, 'прогрес повернувся із сервера');
+  await click('#logout');
+  await waitFor("document.querySelector('#auth-form')");
+  await submitAuth({ name: 'Оля', pass: 'таємно' });
+  await authError(/Невірне ім’я або пароль/);
+  await submitAuth({ name: 'оля', pass: 'новий-пароль' });
   await waitFor("window.soloApp.state && document.querySelector('#user-link').textContent.includes('Оля')", 'повторний вхід');
+  await goto('#/');
+  await waitFor("document.querySelector('#go-next')", 'шлях після входу з «іншого комп’ютера»');
+  assert.equal(await js("soloApp.profile.lessons['s1-fj'].done"), true, 'закріплена вправа повернулася із сервера');
   await goto('#/cabinet');
   await waitFor("document.querySelector('.grade-card')");
   assert.match(await text('#grade-h'), /Звання: Новачок/);
@@ -225,7 +257,7 @@ try {
   await shot('05b-cabinet');
   await goto('#/');
   await waitFor("document.querySelector('#go-next')");
-  step('вихід, хибний пароль відхилено, повторний вхід, кабінет зі званням і досягненнями');
+  step('вихід → вхід як з іншого комп’ютера, відновлення пароля за секретним питанням, кабінет');
 
   // 5. Невдала спроба: швидкість без точності не зараховується, порада конкретна.
   await click('#go-next');

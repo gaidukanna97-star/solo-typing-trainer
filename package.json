@@ -12,5 +12,10 @@
     "test:e2e": "node scripts/e2e.mjs",
     "build:outline": "node scripts/outline.mjs"
   },
-  "engines": { "node": ">=20" }
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@vercel/blob": "^2.8.0"
+  }
 }

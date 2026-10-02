@@ -135,20 +135,24 @@ test('офлайн: service worker кешує всі модулі та дані,
   const data = ['uk', 'en'].flatMap((l) => [`data/derived/${l}-words.json`, `data/derived/${l}-ngrams.json`, `data/curriculum/content-${l}.json`]);
   for (const file of [...modules, ...data, 'index.html', 'styles.css']) assert.ok(listed.has(file), `${file} немає у списку кешу`);
   for (const file of listed) assert.ok(existsSync(join(ROOT, file)), `${file} зі списку кешу не існує`);
-  // Застосунок не звертається до зовнішніх адрес.
+  // Єдина зовнішня адреса — сервер кабінетів у src/core/remote.js; сторонніх скриптів, шрифтів і аналітики немає.
   for (const file of [...modules, 'index.html', 'styles.css']) {
     assert.ok(!/(?:src|href|fetch\(|import)\s*=?\s*\(?['"]https?:/.test(read(file)), `${file}: зовнішній ресурс`);
+    const urls = [...read(file).matchAll(/https?:\/\/[^\s'"`)<]+/g)].map((m) => m[0]).filter((u) => !u.startsWith('http://www.w3.org/'));
+    if (file === 'src/core/remote.js') assert.deepEqual(urls, ['https://solo-typing-trainer.vercel.app/api/account']);
+    else assert.deepEqual(urls, [], `${file}: зовнішня адреса`);
   }
 });
 
 test('у репозиторії немає секретів', () => {
   const walk = (dir) => readdirSync(join(ROOT, dir), { withFileTypes: true }).flatMap((e) => {
-    if (['node_modules', '.git', 'dictionaries'].includes(e.name)) return [];
+    if (['node_modules', '.git', 'dictionaries', '.vercel', '.local-data'].includes(e.name)) return [];
     return e.isDirectory() ? walk(`${dir}${e.name}/`) : [`${dir}${e.name}`];
   });
   const secret = /(sk-[A-Za-z0-9]{20,}|AKIA[0-9A-Z]{16}|-----BEGIN [A-Z ]*PRIVATE KEY-----|ghp_[A-Za-z0-9]{30,})/;
   for (const file of walk('')) {
     if (/\.(js|mjs|json|html|css|md|yml|txt)$/.test(file)) assert.ok(!secret.test(read(file)), file);
-    assert.ok(!/^\.env(\..+)?$/.test(file) || file === '.env.example', `${file}: файл середовища в репозиторії`);
+    if (/^\.env(\..+)?$/.test(file) && file !== '.env.example') assert.match(read('.gitignore'), /^\.env\*$/m, `${file} має бути в .gitignore`);
+    else if (/\.(js|mjs|json)$/.test(file)) assert.ok(!/BLOB_READ_WRITE_TOKEN\s*[:=]\s*['"]\w/.test(read(file)), `${file}: токен сховища в коді`);
   }
 });

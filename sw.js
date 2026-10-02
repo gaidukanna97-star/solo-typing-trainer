@@ -1,7 +1,7 @@
 // Service worker: після першого завантаження базове навчання працює без мережі.
 // Стратегія «спершу мережа, потім кеш»: онлайн завжди свіжа версія, офлайн — збережена.
 
-const CACHE = 'solo-v4';
+const CACHE = 'solo-v5';
 const PRECACHE = [
   './',
   'index.html',
@@ -25,6 +25,7 @@ const PRECACHE = [
   'src/core/feedback.js',
   'src/core/gamification.js',
   'src/core/layouts.js',
+  'src/core/remote.js',
   'src/core/session.js',
   'src/core/storage.js',
   'data/derived/uk-words.json',
