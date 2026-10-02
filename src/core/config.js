@@ -34,6 +34,17 @@ export const DEFAULT_SETTINGS = {
 // Діагностика: з якого результату вважаємо, що людина вже друкує наосліп.
 export const PLACEMENT = { minSpm: 100, minAcc: 95 };
 
+// Сертифікати зрізу швидкості — від найвищого до найнижчого. Обидві умови обов'язкові одночасно.
+export const CERT_TIERS = [
+  { id: 'gold', name: 'Золотий', minSpm: 250, minAcc: 98 },
+  { id: 'silver', name: 'Срібний', minSpm: 200, minAcc: 97 },
+  { id: 'bronze', name: 'Бронзовий', minSpm: 150, minAcc: 96 },
+];
+export const EXAM_MIN_CHARS = 450;
+// Вище цього темпу людина не друкує: такий результат вважається автоматичним введенням і сертифіката не дає.
+export const EXAM_MAX_SPM = 1200;
+export const CERT_LIMIT = 30;
+
 export const HISTORY_LIMIT = 300;
 // Інтервали, довші за це, вважаються паузою і не входять до статистики ритму й переходів.
 export const PAUSE_MS = 3000;

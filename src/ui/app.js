@@ -7,8 +7,9 @@ import { DEFAULT_SETTINGS } from '../core/config.js';
 import { buildCurriculum } from '../core/curriculum.js';
 import * as pages from './views.js';
 import { auth, cabinet } from './account-views.js';
+import { exam, certificate } from './exam-views.js';
 
-const views = { ...pages, auth, cabinet };
+const views = { ...pages, auth, cabinet, exam, certificate };
 import { $, $$, esc, announce } from './dom.js';
 
 const main = document.getElementById('app');
@@ -129,6 +130,8 @@ const app = {
       case 'review': cleanup = views.review(this, main); break;
       case 'drill': cleanup = views.drill(this, main); break;
       case 'cabinet': case 'stats': views.cabinet(this, main); break;
+      case 'exam': cleanup = views.exam(this, main, arg); break;
+      case 'certificate': views.certificate(this, main, arg); break;
       case 'custom': cleanup = views.custom(this, main); break;
       default: views.notFound(main);
     }
@@ -156,7 +159,7 @@ async function loadCurriculum(lang) {
 function updateNav(route, lang, signedIn) {
   $$('.nav a').forEach((a) => {
     const target = a.getAttribute('href').split('/')[1] || '';
-    const current = target === route || (target === '' && route === 'lesson') || (target === 'cabinet' && route === 'stats');
+    const current = target === route || (target === '' && route === 'lesson') || (target === 'cabinet' && ['stats', 'exam', 'certificate'].includes(route));
     if (current) a.setAttribute('aria-current', 'page');
     else a.removeAttribute('aria-current');
   });

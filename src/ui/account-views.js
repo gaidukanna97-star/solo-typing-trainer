@@ -5,6 +5,7 @@ import {
 } from '../core/accounts.js';
 import { GRADES, ACHIEVEMENTS, XP, gradeFor, dayStreak } from '../core/gamification.js';
 import { statsHtml, LANG_LABEL } from './views.js';
+import { certListHtml, tiersTableHtml } from './exam-views.js';
 import { esc, $, $$, announce } from './dom.js';
 
 export function auth(app, root) {
@@ -122,11 +123,17 @@ export function cabinet(app, root) {
       <div><dt>Досягнення</dt><dd>${got}<small> / ${ACHIEVEMENTS.length}</small></dd></div>
     </dl>
     <section class="card"><h2>Досягнення <span class="count">${got} / ${ACHIEVEMENTS.length}</span></h2><ul class="badges">${badges}</ul></section>
+    <section class="card" aria-labelledby="cert-list-h"><h2 id="cert-list-h">Сертифікати</h2>
+      <p>Пройди зріз швидкості — зв’язний текст без підказок — і отримай бронзовий, срібний або золотий сертифікат.</p>
+      ${tiersTableHtml()}
+      ${certListHtml(app)}
+      <p><a class="btn btn-primary" href="#/exam">Пройти зріз швидкості</a></p>
+    </section>
     <section class="card"><h2>Як заробляється досвід</h2>
       <ul>
         <li>Зарахована залікова спроба — ${XP.pass} XP; вільна вправа — ${XP.free} XP.</li>
         <li>Точність від 99% — ще ${XP.accurate} XP, без жодної помилки — ще ${XP.flawless} XP.</li>
-        <li>Закріплена вправа — ${XP.lessonDone} XP, завершений модуль Академії — ${XP.moduleDone} XP, повне заняття дня — ${XP.daily} XP.</li>
+        <li>Закріплена вправа — ${XP.lessonDone} XP, завершений модуль Академії — ${XP.moduleDone} XP, повне заняття дня — ${XP.daily} XP, сертифікат — ${XP.cert} XP.</li>
         <li>Незарахована спроба досвіду не дає: швидкість без точності не винагороджується.</li>
       </ul>
     </section>

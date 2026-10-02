@@ -248,3 +248,28 @@ input[type="text"], input[type="password"] { font: inherit; color: var(--text); 
 details summary { cursor: pointer; font-weight: 600; padding: .3rem 0; }
 
 [hidden] { display: none !important; }
+
+/* Зріз швидкості та сертифікат */
+.medal { display: inline-block; width: 1em; height: 1em; border-radius: 50%; vertical-align: -2px; border: 2px solid rgb(0 0 0 / 25%); }
+.medal-gold { background: #d9a520; } .medal-silver { background: #a9b1ba; } .medal-bronze { background: #b5713a; }
+.cert-actions { margin: 0 0 1rem; }
+.cert { --tier: #b5713a; max-width: 820px; margin: 0 auto; padding: 2.2rem 2rem 1.6rem; text-align: center; background: #ffffff; color: #141414; border: 3px solid var(--tier); outline: 1px solid var(--tier); outline-offset: -12px; border-radius: 6px; }
+.cert-gold { --tier: #b8860b; } .cert-silver { --tier: #7d8590; } .cert-bronze { --tier: #a0522d; }
+.cert-logo { height: 40px; width: auto; }
+.cert-kicker { margin: .8rem 0 0; font-size: .9rem; letter-spacing: .12em; text-transform: uppercase; color: #5e5857; }
+.cert h1 { font-size: 2.2rem; margin: .3rem 0 .6rem; color: var(--tier); }
+.cert-medal { width: 64px; height: 64px; margin: 0 auto .6rem; border-radius: 50%; border: 5px solid rgb(0 0 0 / 18%); }
+.cert-line { margin: .3rem 0; color: #2e2e2e; }
+.cert-name { font-size: 2rem; font-weight: 700; margin: .2rem auto .4rem; padding-bottom: .2rem; border-bottom: 2px solid var(--tier); display: inline-block; min-width: 50%; overflow-wrap: anywhere; }
+.cert-metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: .6rem; margin: 1.2rem 0 .8rem; }
+.cert-metrics div { border: 1px solid #e3c8c4; border-radius: 8px; padding: .5rem; }
+.cert-metrics dt { color: #5e5857; } .cert-metrics dd small { color: #5e5857; }
+.cert-date { font-weight: 600; }
+.cert-note { font-size: .82rem; color: #5e5857; max-width: 60ch; margin: .6rem auto 0; }
+@media (max-width: 760px) { .cert-metrics { grid-template-columns: repeat(2, 1fr); } .cert { padding: 1.6rem 1rem 1.2rem; } .cert h1 { font-size: 1.6rem; } .cert-name { font-size: 1.5rem; } }
+@media print {
+  .top, .foot, .skip, .no-print { display: none !important; }
+  body { background: #fff; }
+  main { max-width: none; padding: 0; }
+  .cert { margin-top: 1cm; break-inside: avoid; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}

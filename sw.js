@@ -1,7 +1,7 @@
 // Service worker: після першого завантаження базове навчання працює без мережі.
 // Стратегія «спершу мережа, потім кеш»: онлайн завжди свіжа версія, офлайн — збережена.
 
-const CACHE = 'solo-v3';
+const CACHE = 'solo-v4';
 const PRECACHE = [
   './',
   'index.html',
@@ -10,6 +10,7 @@ const PRECACHE = [
   'assets/favicon.svg',
   'assets/ametrin-logo.svg',
   'src/ui/app.js',
+  'src/ui/exam-views.js',
   'src/ui/account-views.js',
   'src/ui/views.js',
   'src/ui/trainer.js',
@@ -17,6 +18,7 @@ const PRECACHE = [
   'src/ui/dom.js',
   'src/core/accounts.js',
   'src/core/analysis.js',
+  'src/core/certificate.js',
   'src/core/config.js',
   'src/core/curriculum.js',
   'src/core/customtext.js',

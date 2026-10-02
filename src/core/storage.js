@@ -18,7 +18,7 @@ export function emptyProfile() {
 }
 
 export function emptyGame() {
-  return { xp: 0, passed: 0, achievements: {}, days: [] };
+  return { xp: 0, passed: 0, achievements: {}, days: [], certs: [] };
 }
 
 export function emptyState() {
@@ -64,6 +64,13 @@ export function validateState(raw) {
     if (Number.isInteger(g.passed) && g.passed >= 0) state.game.passed = g.passed;
     if (isObject(g.achievements)) {
       for (const [id, t] of Object.entries(g.achievements)) if (typeof t === 'number') state.game.achievements[id] = t;
+    }
+    if (Array.isArray(g.certs)) {
+      state.game.certs = g.certs
+        .filter((c) => isObject(c) && ['gold', 'silver', 'bronze'].includes(c.tier) && ['uk', 'en'].includes(c.lang)
+          && [c.t, c.spm, c.acc, c.errors, c.ms, c.chars].every(Number.isFinite))
+        .map((c) => ({ t: c.t, lang: c.lang, tier: c.tier, spm: c.spm, acc: c.acc, errors: c.errors, ms: c.ms, chars: c.chars }))
+        .slice(-30);
     }
     if (Array.isArray(g.days)) state.game.days = g.days.filter((d) => /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(d)).slice(-400);
   }

@@ -7,6 +7,7 @@ import { recordAttempt } from '../core/storage.js';
 import { nextAction } from '../core/feedback.js';
 import { nextLesson, moduleProgress } from '../core/curriculum.js';
 import { awardAttempt } from '../core/gamification.js';
+import { tierFor, addCertificate } from '../core/certificate.js';
 import { keyboardHtml, legendHtml, highlightNext } from './keyboard.js';
 import { esc, $, announce, formatTime, showChar } from './dom.js';
 
@@ -235,14 +236,17 @@ export function runExercise(root, app, ex, opts = {}) {
     const passed = isPassed(metrics, rule, gate);
     let outcome = null;
     let reward = null;
+    const extra = {};
     if (isTest) {
       const needed = ex.lesson ? settings.streak : Number.MAX_SAFE_INTEGER;
       const now = Date.now();
       outcome = recordAttempt(profile, ex.id, metrics, passed, needed, now);
+      const cert = ex.exam ? tierFor(metrics) : null;
+      if (cert) extra.certIndex = addCertificate(app.state, { tier: cert, lang: cur.lang, metrics, now });
       const module = ex.lesson?.module ? cur.modules.find((m) => m.id === ex.lesson.module) : null;
       reward = awardAttempt(app.state, {
         cur, lang: cur.lang, lesson: ex.lesson || null, exId: ex.id, metrics, passed,
-        justDone: outcome.justDone,
+        justDone: outcome.justDone, cert,
         moduleDone: Boolean(module && outcome.justDone && moduleProgress(cur, profile, module).complete),
         now,
       });
@@ -250,7 +254,7 @@ export function runExercise(root, app, ex, opts = {}) {
       app.updateUser();
       seed++;
     }
-    const verdict = isTest && opts.verdict ? opts.verdict(metrics, passed) : null;
+    const verdict = isTest && opts.verdict ? opts.verdict(metrics, passed, extra) : null;
     const next = nextLesson(cur, profile);
     const feedback = isTest
       ? nextAction(metrics, {

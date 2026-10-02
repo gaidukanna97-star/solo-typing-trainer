@@ -228,9 +228,9 @@ test('серія днів і заняття дня', () => {
 
 test('гейміфікація входить до експорту й переживає імпорт; чужі поля відкидаються', () => {
   const state = emptyState();
-  state.game = { xp: 777, passed: 12, achievements: { first: 5 }, days: ['2026-10-02'] };
+  state.game = { xp: 777, passed: 12, achievements: { first: 5 }, days: ['2026-10-02'], certs: [{ t: 9, lang: 'uk', tier: 'gold', spm: 260, acc: 98.5, errors: 7, ms: 110000, chars: 470 }] };
   assert.deepEqual(importState(exportState(state)).game, state.game);
-  const odd = importState(JSON.stringify({ version: 1, profiles: {}, game: { xp: -5, passed: 'багато', achievements: { first: 'так' }, days: ['сьогодні', '2026-10-02'] } }));
-  assert.deepEqual(odd.game, { xp: 0, passed: 0, achievements: {}, days: ['2026-10-02'] });
+  const odd = importState(JSON.stringify({ version: 1, profiles: {}, game: { xp: -5, passed: 'багато', achievements: { first: 'так' }, days: ['сьогодні', '2026-10-02'], certs: [{ tier: 'platinum', lang: 'uk' }, 'сміття'] } }));
+  assert.deepEqual(odd.game, { xp: 0, passed: 0, achievements: {}, days: ['2026-10-02'], certs: [] });
   assert.equal(new Set(ACHIEVEMENTS.map((a) => a.id)).size, ACHIEVEMENTS.length);
 });

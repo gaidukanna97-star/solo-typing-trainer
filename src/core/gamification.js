@@ -17,7 +17,7 @@ export const GRADES = [
   { id: 'virtuoso', name: 'Віртуоз', xp: 7000, about: 'Набір наосліп став другою натурою.' },
 ];
 
-export const XP = { pass: 10, free: 5, accurate: 5, flawless: 10, lessonDone: 40, moduleDone: 100, daily: 30 };
+export const XP = { pass: 10, free: 5, accurate: 5, flawless: 10, lessonDone: 40, moduleDone: 100, daily: 30, cert: 60 };
 
 /** Звання за кількістю XP і шлях до наступного. */
 export function gradeFor(xp) {
@@ -74,6 +74,8 @@ export const ACHIEVEMENTS = [
   { id: 'speed150', title: 'Впевнений темп', about: '150 SPM у словах або тексті — із точністю, достатньою для заліку.', test: (c) => fastText(c, 150) },
   { id: 'speed225', title: 'Робочий темп', about: '225 SPM у словах або тексті.', test: (c) => fastText(c, 225) },
   { id: 'speed300', title: 'Швидкісний темп', about: '300 SPM у словах або тексті.', test: (c) => fastText(c, 300) },
+  { id: 'cert', title: 'Перший сертифікат', about: 'Отримати сертифікат на зрізі швидкості.', test: (c) => Boolean(c.cert) },
+  { id: 'gold', title: 'Золото', about: 'Отримати золотий сертифікат.', test: (c) => c.cert?.id === 'gold' },
   { id: 'streak3', title: 'Три дні поспіль', about: 'Займатися три дні поспіль.', test: (c) => c.streak >= 3 },
   { id: 'streak7', title: 'Тиждень поспіль', about: 'Займатися сім днів поспіль.', test: (c) => c.streak >= 7 },
   { id: 'hundred', title: 'Сто заліків', about: 'Зарахувати сто спроб.', test: (c) => c.game.passed >= 100 },
@@ -103,6 +105,7 @@ export function awardAttempt(state, ctx) {
     else if (ctx.metrics.accuracy >= 99) parts.push({ label: 'точність від 99%', xp: XP.accurate });
     if (ctx.justDone) parts.push({ label: 'вправу закріплено', xp: XP.lessonDone });
     if (ctx.moduleDone) parts.push({ label: 'модуль Академії завершено', xp: XP.moduleDone });
+    if (ctx.cert) parts.push({ label: `${ctx.cert.name.toLowerCase()} сертифікат`, xp: XP.cert });
     game.passed++;
   }
   markDay(game, ctx.now);
@@ -124,7 +127,7 @@ export function awardDaily(state, ctx) {
 function checkAchievements(state, ctx) {
   const game = state.game;
   const c = {
-    passed: false, moduleDone: false, lesson: null, metrics: { accuracy: 0, length: 0, spm: 0 },
+    passed: false, moduleDone: false, lesson: null, cert: null, metrics: { accuracy: 0, length: 0, spm: 0 },
     ...ctx,
     state, game,
     profile: state.profiles[ctx.lang],

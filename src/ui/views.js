@@ -154,6 +154,7 @@ export function home(app, root) {
         ${next ? `<a class="btn btn-primary" id="go-next" href="#/lesson/${next.id}">Почати вправу</a>` : ''}
         <a class="btn" href="#/daily">Заняття дня · 15–25 хв</a>
         <a class="btn" href="#/review">Повторити слабкі місця</a>
+        <a class="btn" href="#/exam">Зріз швидкості · сертифікат</a>
       </div>
     </section>
     <dl class="summary">

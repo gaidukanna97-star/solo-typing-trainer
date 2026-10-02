@@ -275,6 +275,48 @@ try {
   assert.equal(await js("soloApp.profile.lessons['a-bigrams-1'].attempts"), 1);
   step('етап 3: вправа Академії на частотні біграми');
 
+  // 6а. Зріз швидкості та сертифікат.
+  await goto('#/exam');
+  await waitFor("document.querySelector('#exam-start')");
+  assert.match(await text('#app'), /Золотий[\s\S]*від 250 SPM[\s\S]*від 98%/);
+  await goto('#/exam/start');
+  await waitFor("document.querySelector('#typebox')");
+  assert.equal(await js("!document.querySelector('.kb') && !document.querySelector('[data-phase]')"), true, 'зріз без підказок і без розучування');
+  const examTextValue = await exerciseText();
+  assert.ok(examTextValue.length >= 450);
+  // Неточний зріз: кожен восьмий символ із помилкою — сертифіката немає за будь-якої швидкості.
+  let k = 0;
+  for (const ch of examTextValue) {
+    if (k % 8 === 0) await key(ch === '~' ? '#' : '~');
+    await sleep(55);
+    await key(ch);
+    k++;
+  }
+  await waitFor("document.querySelector('.results')");
+  assert.match(await text('#res-advice'), /Сертифікат поки не видано/);
+  assert.equal(await js('soloApp.state.game.certs.length'), 0);
+  await key('Enter');
+  await waitFor("document.querySelector('#typebox') && !document.querySelector('.results')");
+  // Миттєве автоматичне введення сертифіката не дає.
+  await typeText(await exerciseText());
+  await waitFor("document.querySelector('.results')");
+  assert.match(await text('#res-advice'), /так швидко людина не друкує/);
+  assert.equal(await js('soloApp.state.game.certs.length'), 0);
+  await key('Enter');
+  await waitFor("document.querySelector('#typebox') && !document.querySelector('.results')");
+  await typeText(await exerciseText(), { delay: 55 });
+  await waitFor("document.querySelector('.results')");
+  assert.match(await text('#res-advice'), /золотий сертифікат/);
+  assert.match(await text('#res-reward'), /сертифікат \+60/);
+  await key('Enter');
+  await waitFor("document.querySelector('.cert')", 'сторінка сертифіката');
+  assert.match(await text('#cert-h'), /Золотий сертифікат/);
+  assert.match(await text('.cert-name'), /Оля/);
+  await shot('08b-certificate');
+  await send('Page.reload');
+  await waitFor("document.querySelector('.cert')", 'сертифікат після перезавантаження');
+  step('зріз швидкості: неточна спроба без сертифіката, точна — золотий сертифікат');
+
   // 7. Інші сторінки.
   await goto('#/stats');
   await waitFor("document.querySelector('.grade-card') && document.querySelector('.chart, .kb')");
