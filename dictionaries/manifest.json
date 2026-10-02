@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "snapshotDate": "2026-08-30",
+  "origin": "https://stszu.github.io/Typing-Race-2026-Hackathon/dictionaries/",
+  "note": "Незмінні знімки джерел. Файли не редагуються; похідні дані лежать у data/derived/.",
+  "datasets": [
+    {
+      "id": "frequencywords-en",
+      "language": "en",
+      "kind": "frequency-list",
+      "source": "https://github.com/hermitdave/FrequencyWords",
+      "revision": "525f9b560de45753a5ea01069454e72e9aa541c6",
+      "license": "MIT",
+      "licenseFile": "en/frequencywords-2018/LICENSE",
+      "use": "частоти слів; основа data/derived/en-*.json",
+      "originalPath": "english/wordlists/frequencywords-2018",
+      "files": [
+        {
+          "path": "en/frequencywords-2018/en_50k.txt",
+          "sha256": "5351ff405b1126ef555791dd4d9798a48e3e9a501a9fc481a9da957752cfb458"
+        },
+        {
+          "path": "en/frequencywords-2018/LICENSE",
+          "sha256": "e08d916cc953f85f7dfa0df530f6d7931f14ce804d053602662d8649b5fac829"
+        }
+      ]
+    },
+    {
+      "id": "hunspell-en",
+      "language": "en",
+      "kind": "hunspell",
+      "source": "https://github.com/wooorm/dictionaries",
+      "upstream": "http://wordlist.aspell.net/ (SCOWL)",
+      "revision": "8cfea406b505e4d7df52d5a19bce525df98c54ab",
+      "license": "MIT AND BSD-compatible (SCOWL)",
+      "licenseFile": "en/hunspell-en/LICENSE",
+      "use": "лише перевірка слів під час збірки (чи є слово словниковою формою, не власна назва)",
+      "originalPath": "english/wordlists/hunspell-en",
+      "files": [
+        {
+          "path": "en/hunspell-en/index.dic",
+          "sha256": "f0b1a234bd178bdd01875b2a392a9647f888b8fe879f79c52aae62c2759b3647"
+        },
+        {
+          "path": "en/hunspell-en/index.aff",
+          "sha256": "8ae1f19d4840d957728ad90555d5a8dff6cc5c046279c95ff0c00fc0a0136c7b"
+        },
+        {
+          "path": "en/hunspell-en/LICENSE",
+          "sha256": "2a7e8d8ae9e8facc84818546ae2a8d83aec5e9c80a675ff789acd1c338b53b3d"
+        },
+        {
+          "path": "en/hunspell-en/PACKAGE-LICENSE-MIT",
+          "sha256": "63cb98b3f6abfb3c3592c16f88253c1bdc834087bf52671e8ce5609e4eb693cf"
+        },
+        {
+          "path": "en/hunspell-en/README.original.md",
+          "sha256": "064712519703612d893383416e7b658943bfd71187824afa71d5bc1bb86273e9"
+        }
+      ]
+    },
+    {
+      "id": "frequencywords-uk",
+      "language": "uk",
+      "kind": "frequency-list",
+      "source": "https://github.com/hermitdave/FrequencyWords",
+      "revision": "525f9b560de45753a5ea01069454e72e9aa541c6",
+      "license": "MIT",
+      "licenseFile": "uk/frequencywords-2018/LICENSE",
+      "use": "частоти слів; основа data/derived/uk-*.json",
+      "originalPath": "ukrainian/wordlists/frequencywords-2018",
+      "files": [
+        {
+          "path": "uk/frequencywords-2018/uk_50k.txt",
+          "sha256": "881686fe66a168b79f6a9ee2f6cbbf944cfb12bfb7040913ef535cb29bd86ec9"
+        },
+        {
+          "path": "uk/frequencywords-2018/LICENSE",
+          "sha256": "e08d916cc953f85f7dfa0df530f6d7931f14ce804d053602662d8649b5fac829"
+        }
+      ]
+    },
+    {
+      "id": "hunspell-uk",
+      "language": "uk",
+      "kind": "hunspell",
+      "source": "https://github.com/brown-uk/dict_uk",
+      "package": "https://github.com/wooorm/dictionaries",
+      "revision": "8cfea406b505e4d7df52d5a19bce525df98c54ab",
+      "license": "GPL-3.0",
+      "licenseFile": "uk/hunspell-uk/LICENSE",
+      "use": "лише перевірка слів під час збірки (відсіювання неукраїнських слів і власних назв)",
+      "originalPath": "ukrainian/wordlists/hunspell-uk",
+      "files": [
+        {
+          "path": "uk/hunspell-uk/index.dic",
+          "sha256": "48cbe32567a2c3c98f83d437bcd84ad3c11310e9df4d6c15d888b1e67654be31"
+        },
+        {
+          "path": "uk/hunspell-uk/index.aff",
+          "sha256": "4243327a3aa19c6db5a4fb2e0c4e3eba6ad26e7ccb8a3f4e634c28d9a2d18956"
+        },
+        {
+          "path": "uk/hunspell-uk/LICENSE",
+          "sha256": "d62f065830aa3739cc031156b9690805c7b2e811b4a178c8b4acd8725d561c94"
+        },
+        {
+          "path": "uk/hunspell-uk/PACKAGE-LICENSE-MIT",
+          "sha256": "63cb98b3f6abfb3c3592c16f88253c1bdc834087bf52671e8ce5609e4eb693cf"
+        },
+        {
+          "path": "uk/hunspell-uk/README.original.md",
+          "sha256": "862769782544f44f01f9f956c2ff2b7228db39df957958424411685061186e5a"
+        }
+      ]
+    }
+  ]
+}

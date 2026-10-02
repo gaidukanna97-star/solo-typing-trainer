@@ -1,0 +1,4 @@
+* text=auto eol=lf
+dictionaries/** -text
+data/derived/** -text
+data/curriculum/** -text

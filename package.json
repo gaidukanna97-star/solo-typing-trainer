@@ -1,0 +1,16 @@
+{
+  "name": "solo-typing-trainer",
+  "version": "1.0.0",
+  "description": "Соло — браузерний тренажер сенсорного набору українською та англійською",
+  "type": "module",
+  "license": "GPL-3.0-or-later",
+  "private": true,
+  "scripts": {
+    "start": "node scripts/serve.mjs",
+    "build:data": "node scripts/build-data.mjs",
+    "test": "node --test",
+    "test:e2e": "node scripts/e2e.mjs",
+    "build:outline": "node scripts/outline.mjs"
+  },
+  "engines": { "node": ">=20" }
+}
