@@ -48,7 +48,10 @@ const app = {
     const user = currentUser(this.root);
     if (isRemote(user)) user.remote.dirty = true;
     this.persist();
-    if (isRemote(user)) this.schedulePush();
+    if (isRemote(user)) {
+      this.setSync('saving'); // позначка «збережено» не має висіти, поки зміни ще не на сервері
+      this.schedulePush();
+    }
   },
 
   persist() {
