@@ -1,0 +1,1015 @@
+{
+  "language": "en",
+  "note": "Згенеровано scripts/outline.mjs із data/derived/ та content-*.json. Не редагувати вручну.",
+  "modules": [
+    {
+      "id": "bigrams",
+      "title": "Частотні біграми",
+      "about": "Дванадцять найчастотніших пар літер усередині слів. Вага пари — сума частот слів, у яких вона трапляється.",
+      "lessons": [
+        "a-bigrams-1",
+        "a-bigrams-2",
+        "a-bigrams-3"
+      ]
+    },
+    {
+      "id": "trigrams",
+      "title": "Частотні триграми",
+      "about": "Дванадцять найчастотніших трійок літер: з них складається більшість слів.",
+      "lessons": [
+        "a-trigrams-1",
+        "a-trigrams-2",
+        "a-trigrams-3"
+      ]
+    },
+    {
+      "id": "morphemes",
+      "title": "Суфікси й закінчення",
+      "about": "Типові морфеми мови: закінчення слова має набиратися одним рухом.",
+      "lessons": [
+        "a-morphemes-1",
+        "a-morphemes-2"
+      ]
+    },
+    {
+      "id": "samefinger",
+      "title": "Складні переходи одним пальцем",
+      "about": "Пари, де обидві літери набирає той самий палець. Це найповільніші рухи, тому їх тренують окремо.",
+      "lessons": [
+        "a-samefinger-1",
+        "a-samefinger-2"
+      ]
+    },
+    {
+      "id": "flow",
+      "title": "Чергування рук і перекати",
+      "about": "Найшвидші рухи: літери по черзі різними руками та «перекати» сусідніми пальцями однієї руки.",
+      "lessons": [
+        "a-flow-1",
+        "a-flow-2",
+        "a-flow-3"
+      ]
+    },
+    {
+      "id": "doubles",
+      "title": "Подвоєння літер",
+      "about": "Дві однакові літери поспіль: два чітких натискання одним пальцем.",
+      "lessons": [
+        "a-doubles-1"
+      ]
+    },
+    {
+      "id": "signs",
+      "title": "Великі літери, знаки й числа",
+      "about": "Shift, апостроф, дефіс, кома, крапка, лапки та числа в реальних реченнях.",
+      "lessons": [
+        "a-signs-1",
+        "a-signs-2",
+        "a-signs-3"
+      ]
+    },
+    {
+      "id": "tempo",
+      "title": "Короткі серії на темп",
+      "about": "Короткі серії найчастотніших слів. Тут є вимога до швидкості, але точність усе одно обов’язкова.",
+      "lessons": [
+        "a-tempo-1",
+        "a-tempo-2"
+      ]
+    },
+    {
+      "id": "sentences",
+      "title": "Речення",
+      "about": "Перенесення навички в зв’язний текст: речення з великими літерами та розділовими знаками.",
+      "lessons": [
+        "a-sentences-1",
+        "a-sentences-2",
+        "a-sentences-3"
+      ]
+    },
+    {
+      "id": "paragraphs",
+      "title": "Абзаци",
+      "about": "Суцільний текст — те, заради чого все навчання. Рівний ритм і точність на довгій дистанції.",
+      "lessons": [
+        "a-paragraphs-1",
+        "a-paragraphs-2",
+        "a-paragraphs-3"
+      ]
+    }
+  ],
+  "lessons": [
+    {
+      "id": "s1-fj",
+      "stage": 1,
+      "module": null,
+      "title": "Нові клавіші: F J",
+      "goal": "«f» — лівий вказівний, «j» — правий вказівний. Після кожного натискання палець повертається на домашній ряд.",
+      "rule": "scales",
+      "mechanics": true,
+      "newChars": [
+        "f",
+        "j"
+      ],
+      "openChars": " fj",
+      "sample": "fff ff fff jjj jj jjj fj jf fjf jfj jjf ffjf jjf jjf jjjf jjf jffj fjj"
+    },
+    {
+      "id": "s1-dk",
+      "stage": 1,
+      "module": null,
+      "title": "Нові клавіші: D K",
+      "goal": "«d» — лівий середній, «k» — правий середній. Після кожного натискання палець повертається на домашній ряд.",
+      "rule": "scales",
+      "mechanics": true,
+      "newChars": [
+        "d",
+        "k"
+      ],
+      "openChars": " fjdk",
+      "sample": "ddd dd ddd kkk kk kkk dk kd dkd kdk kd kkj dk kd fd dk kkkd kd"
+    },
+    {
+      "id": "s1-sl",
+      "stage": 1,
+      "module": null,
+      "title": "Нові клавіші: S L",
+      "goal": "«s» — лівий безіменний, «l» — правий безіменний. Після кожного натискання палець повертається на домашній ряд.",
+      "rule": "scales",
+      "mechanics": true,
+      "newChars": [
+        "s",
+        "l"
+      ],
+      "openChars": " fjdksl",
+      "sample": "sss ss sss lll ll lll sl ls sls lsl fl sl skl lssl sls ffls fls sfss"
+    },
+    {
+      "id": "s1-a;",
+      "stage": 1,
+      "module": null,
+      "title": "Нові клавіші: A ;",
+      "goal": "«a» — лівий мізинець, «;» — правий мізинець. Після кожного натискання палець повертається на домашній ряд.",
+      "rule": "scales",
+      "mechanics": true,
+      "newChars": [
+        "a",
+        ";"
+      ],
+      "openChars": " fjdksla;",
+      "sample": "aaa aa aaa ;;; ;; ;;; a; ;a a;a ;a; a; l;da da; adj ;f ;;s ;a ;j"
+    },
+    {
+      "id": "s1-seq",
+      "stage": 1,
+      "module": null,
+      "title": "Гама: зліва направо і назад",
+      "goal": "Послідовний рух пальцями по домашньому ряду зліва направо і справа наліво. Натискай рівно, без поспіху.",
+      "rule": "scales",
+      "mechanics": true,
+      "newChars": [],
+      "openChars": " fjdksla;",
+      "sample": "asdf jkl; asdf jkl; ;lkj fdsa ;lkj fdsa asdfjkl; ;lkjfdsa asdf jkl; ;lkj fdsa asdfjkl; ;lkjfdsa"
+    },
+    {
+      "id": "s1-mirror",
+      "stage": 1,
+      "module": null,
+      "title": "Гама: дзеркальні пари",
+      "goal": "Дзеркальні пари від країв до центру й назад: мізинці, безіменні, середні, вказівні. Ліва й права рука роблять однаковий рух.",
+      "rule": "scales",
+      "mechanics": true,
+      "newChars": [],
+      "openChars": " fjdksla;",
+      "sample": "a; sl dk fj fj dk sl a; a;sl dkfj fjdk sla; ;a ls kd jf jf kd ls ;a a;sldkfj fjdksla;"
+    },
+    {
+      "id": "s1-alt",
+      "stage": 1,
+      "module": null,
+      "title": "Гама: чергування рук",
+      "goal": "Чергування лівої та правої руки й ізоляція однойменних пальців. Один палець рухається — решта лежать на місці.",
+      "rule": "scales",
+      "mechanics": true,
+      "newChars": [],
+      "openChars": " fjdksla;",
+      "sample": "aj sk dl f; ja ks ld ;f ajsk dlf; ff jj fj dd kk dk ss ll sl aa ;; a; fjfj dkdk slsl a;a;"
+    },
+    {
+      "id": "s2-home",
+      "stage": 2,
+      "module": null,
+      "title": "Слова з домашнього ряду",
+      "goal": "Перші справжні слова — лише з восьми клавіш домашнього ряду. Пальці не залишають вихідної позиції.",
+      "rule": "words",
+      "mechanics": false,
+      "newChars": [],
+      "openChars": " fjdksla;",
+      "sample": "salad falls lad add sad a salad lad falls dad lads ask add lad as fall dad sad asks falls"
+    },
+    {
+      "id": "s1-gh",
+      "stage": 1,
+      "module": null,
+      "title": "Нові клавіші: G H",
+      "goal": "«g» — лівий вказівний, «h» — правий вказівний. Після кожного натискання палець повертається на домашній ряд.",
+      "rule": "scales",
+      "mechanics": true,
+      "newChars": [
+        "g",
+        "h"
+      ],
+      "openChars": " fjdksla;gh",
+      "sample": "fgf fgf gfg fggf jhj jhj hjh jhhj gh hg ghg hgh fhkl a;hg fhh ggh sgg dh lgg kjg"
+    },
+    {
+      "id": "s2-gh",
+      "stage": 2,
+      "module": null,
+      "title": "Слова з клавішами G H",
+      "goal": "Слова лише з уже відкритих клавіш; закріплюємо нові: «g» — лівий вказівний, «h» — правий вказівний.",
+      "rule": "words",
+      "mechanics": false,
+      "newChars": [],
+      "openChars": " fjdksla;gh",
+      "sample": "has glass gas dad gal flag hall ash flash glad gal half hall asks dad dash a gas glad shall"
+    },
+    {
+      "id": "s1-ru",
+      "stage": 1,
+      "module": null,
+      "title": "Нові клавіші: R U",
+      "goal": "«r» — лівий вказівний, «u» — правий вказівний. Після кожного натискання палець повертається на домашній ряд.",
+      "rule": "scales",
+      "mechanics": true,
+      "newChars": [
+        "r",
+        "u"
+      ],
+      "openChars": " fjdksla;ghru",
+      "sample": "frf frf rfr frrf juj juj uju juuj ru ur rur uru u;ug huuh ur du ul lru uk ru"
+    },
+    {
+      "id": "s2-ru",
+      "stage": 2,
+      "module": null,
+      "title": "Слова з клавішами R U",
+      "goal": "Слова лише з уже відкритих клавіш; закріплюємо нові: «r» — лівий вказівний, «u» — правий вказівний.",
+      "rule": "words",
+      "mechanics": false,
+      "newChars": [],
+      "openChars": " fjdksla;ghru",
+      "sample": "skull flush had hulk sugar sharks guard hush haul surf dull skull fuss rush falls hard full lad skull"
+    },
+    {
+      "id": "s1-ei",
+      "stage": 1,
+      "module": null,
+      "title": "Нові клавіші: E I",
+      "goal": "«e» — лівий середній, «i» — правий середній. Після кожного натискання палець повертається на домашній ряд.",
+      "rule": "scales",
+      "mechanics": true,
+      "newChars": [
+        "e",
+        "i"
+      ],
+      "openChars": " fjdksla;ghruei",
+      "sample": "ded ded ede deed kik kik iki kiik ei ie eie iei ;gi liua es heh ;lii ie gera ;liu"
+    },
+    {
+      "id": "s2-ei",
+      "stage": 2,
+      "module": null,
+      "title": "Слова з клавішами E I",
+      "goal": "Слова лише з уже відкритих клавіш; закріплюємо нові: «e» — лівий середній, «i» — правий середній.",
+      "rule": "words",
+      "mechanics": false,
+      "newChars": [],
+      "openChars": " fjdksla;ghruei",
+      "sample": "she feel fire if afraid lead far see girl sighs use like is dark he less dude used safe sell lie else feel"
+    },
+    {
+      "id": "s1-wo",
+      "stage": 1,
+      "module": null,
+      "title": "Нові клавіші: W O",
+      "goal": "«w» — лівий безіменний, «o» — правий безіменний. Після кожного натискання палець повертається на домашній ряд.",
+      "rule": "scales",
+      "mechanics": true,
+      "newChars": [
+        "w",
+        "o"
+      ],
+      "openChars": " fjdksla;ghrueiwo",
+      "sample": "sws sws wsw swws lol lol olo lool wo ow wow owo uo ;orh wgw uwwu oa iroo iwgw wo"
+    },
+    {
+      "id": "s2-wo",
+      "stage": 2,
+      "module": null,
+      "title": "Слова з клавішами W O",
+      "goal": "Слова лише з уже відкритих клавіш; закріплюємо нові: «w» — лівий безіменний, «o» — правий безіменний.",
+      "rule": "words",
+      "mechanics": false,
+      "newChars": [],
+      "openChars": " fjdksla;ghrueiwo",
+      "sample": "us did kids few girl used will do hold whoa her heard life us show so do hard has real girl how while word here"
+    },
+    {
+      "id": "s1-qp",
+      "stage": 1,
+      "module": null,
+      "title": "Нові клавіші: Q P",
+      "goal": "«q» — лівий мізинець, «p» — правий мізинець. Після кожного натискання палець повертається на домашній ряд.",
+      "rule": "scales",
+      "mechanics": true,
+      "newChars": [
+        "q",
+        "p"
+      ],
+      "openChars": " fjdksla;ghrueiwoqp",
+      "sample": "aqa aqa qaq aqqa ;p; ;p; p;p ;pp; qp pq qpq pqp guph gqip hpqi upgu hpph pqwh pq ooqr"
+    },
+    {
+      "id": "s2-qp",
+      "stage": 2,
+      "module": null,
+      "title": "Слова з клавішами Q P",
+      "goal": "Слова лише з уже відкритих клавіш; закріплюємо нові: «q» — лівий мізинець, «p» — правий мізинець.",
+      "rule": "words",
+      "mechanics": false,
+      "newChars": [],
+      "openChars": " fjdksla;ghrueiwoqp",
+      "sample": "spread dad applause shop so papers help spare pool work spoke please do park real well wife proud is door keep surprised"
+    },
+    {
+      "id": "s1-ty",
+      "stage": 1,
+      "module": null,
+      "title": "Нові клавіші: T Y",
+      "goal": "«t» — лівий вказівний, «y» — правий вказівний. Після кожного натискання палець повертається на домашній ряд.",
+      "rule": "scales",
+      "mechanics": true,
+      "newChars": [
+        "t",
+        "y"
+      ],
+      "openChars": " fjdksla;ghrueiwoqpty",
+      "sample": "ftf ftf tft fttf jyj jyj yjy jyyj ty yt tyt yty tqy towu eqit qyy yr qyy tyi ty"
+    },
+    {
+      "id": "s2-ty",
+      "stage": 2,
+      "module": null,
+      "title": "Слова з клавішами T Y",
+      "goal": "Слова лише з уже відкритих клавіш; закріплюємо нові: «t» — лівий вказівний, «y» — правий вказівний.",
+      "rule": "words",
+      "mechanics": false,
+      "newChars": [],
+      "openChars": " fjdksla;ghrueiwoqpty",
+      "sample": "out has let too told would with away stay our her where first little years thought wait really those okay you so lot good"
+    },
+    {
+      "id": "s1-vm",
+      "stage": 1,
+      "module": null,
+      "title": "Нові клавіші: V M",
+      "goal": "«v» — лівий вказівний, «m» — правий вказівний. Після кожного натискання палець повертається на домашній ряд.",
+      "rule": "scales",
+      "mechanics": true,
+      "newChars": [
+        "v",
+        "m"
+      ],
+      "openChars": " fjdksla;ghrueiwoqptyvm",
+      "sample": "fvf fvf vfv fvvf jmj jmj mjm jmmj vm mv vmv mvm ive mmi mi ov vqwq vmpm mvvy ovw"
+    },
+    {
+      "id": "s2-vm",
+      "stage": 2,
+      "module": null,
+      "title": "Слова з клавішами V M",
+      "goal": "Слова лише з уже відкритих клавіш; закріплюємо нові: «v» — лівий вказівний, «m» — правий вказівний.",
+      "rule": "words",
+      "mechanics": false,
+      "newChars": [],
+      "openChars": " fjdksla;ghrueiwoqptyvm",
+      "sample": "yes met tomorrow them am my may five seems them more make save promise some gave am more same are time five makes of most too there"
+    },
+    {
+      "id": "s1-c,",
+      "stage": 1,
+      "module": null,
+      "title": "Нові клавіші: C ,",
+      "goal": "«c» — лівий середній, «,» — правий середній. Після кожного натискання палець повертається на домашній ряд.",
+      "rule": "scales",
+      "mechanics": true,
+      "newChars": [
+        "c",
+        ","
+      ],
+      "openChars": " fjdksla;ghrueiwoqptyvmc,",
+      "sample": "dcd dcd cdc dccd k,k k,k ,k, k,,k c, ,c c,c ,c, mqc ,qc, c, ,,c cqm ,w ,m,m ocw"
+    },
+    {
+      "id": "s2-c,",
+      "stage": 2,
+      "module": null,
+      "title": "Слова з клавішами C",
+      "goal": "Слова лише з уже відкритих клавіш; закріплюємо нові: «c» — лівий середній.",
+      "rule": "words",
+      "mechanics": false,
+      "newChars": [],
+      "openChars": " fjdksla;ghrueiwoqptyvmc,",
+      "sample": "why just each has touch really clear out how the make secret for course act yes make special close decided chuckles court secret too me"
+    },
+    {
+      "id": "s1-x.",
+      "stage": 1,
+      "module": null,
+      "title": "Нові клавіші: X .",
+      "goal": "«x» — лівий безіменний, «.» — правий безіменний. Після кожного натискання палець повертається на домашній ряд.",
+      "rule": "scales",
+      "mechanics": true,
+      "newChars": [
+        "x",
+        "."
+      ],
+      "openChars": " fjdksla;ghrueiwoqptyvmc,x.",
+      "sample": "sxs sxs xsx sxxs l.l l.l .l. l..l x. .x x.x .x. t.m ym. t..p xppx .x t., ,.. qx"
+    },
+    {
+      "id": "s2-x.",
+      "stage": 2,
+      "module": null,
+      "title": "Слова з клавішами X",
+      "goal": "Слова лише з уже відкритих клавіш; закріплюємо нові: «x» — лівий безіменний.",
+      "rule": "words",
+      "mechanics": false,
+      "newChars": [],
+      "openChars": " fjdksla;ghrueiwoqptyvmc,x.",
+      "sample": "explosive right they like taxi hey luxury you example as how exist really exercise existed relax extremely expected experts there exercise taxi"
+    },
+    {
+      "id": "s1-z/",
+      "stage": 1,
+      "module": null,
+      "title": "Нові клавіші: Z /",
+      "goal": "«z» — лівий мізинець, «/» — правий мізинець. Після кожного натискання палець повертається на домашній ряд.",
+      "rule": "scales",
+      "mechanics": true,
+      "newChars": [
+        "z",
+        "/"
+      ],
+      "openChars": " fjdksla;ghrueiwoqptyvmc,x.z/",
+      "sample": "aza aza zaz azza ;/; ;/; /;/ ;//; z/ /z z/z /z/ /v cxz t/ x/. vz,v z/z ,//z /v/x"
+    },
+    {
+      "id": "s2-z/",
+      "stage": 2,
+      "module": null,
+      "title": "Слова з клавішами Z",
+      "goal": "Слова лише з уже відкритих клавіш; закріплюємо нові: «z» — лівий мізинець.",
+      "rule": "words",
+      "mechanics": false,
+      "newChars": [],
+      "openChars": " fjdksla;ghrueiwoqptyvmc,x.z/",
+      "sample": "razor pizza realize look wizard zero zoo at there apologize her me zoo good puzzle freeze would dizzy let jazz you lazy puzzle the make size"
+    },
+    {
+      "id": "s1-bn",
+      "stage": 1,
+      "module": null,
+      "title": "Нові клавіші: B N",
+      "goal": "«b» — лівий вказівний, «n» — правий вказівний. Після кожного натискання палець повертається на домашній ряд.",
+      "rule": "scales",
+      "mechanics": true,
+      "newChars": [
+        "b",
+        "n"
+      ],
+      "openChars": " fjdksla;ghrueiwoqptyvmc,x.z/bn",
+      "sample": "fbf fbf bfb fbbf jnj jnj njn jnnj bn nb bnb nbn znxz vxnb ,n n. ,bn bc nbb nb"
+    },
+    {
+      "id": "s2-bn",
+      "stage": 2,
+      "module": null,
+      "title": "Слова з клавішами B N",
+      "goal": "Слова лише з уже відкритих клавіш; закріплюємо нові: «b» — лівий вказівний, «n» — правий вказівний.",
+      "rule": "words",
+      "mechanics": false,
+      "newChars": [],
+      "openChars": " fjdksla;ghrueiwoqptyvmc,x.z/bn",
+      "sample": "wanted back going nothing new be there find man can we want now was when thanks and only on my when did she someone be but let it money believe"
+    },
+    {
+      "id": "s1-vertical",
+      "stage": 1,
+      "module": null,
+      "title": "Гама: домашній → верхній → нижній ряд",
+      "goal": "Вертикальні переходи: кожен палець іде вгору, вниз і щоразу повертається на домашню клавішу.",
+      "rule": "scales",
+      "mechanics": true,
+      "newChars": [],
+      "openChars": " fjdksla;ghrueiwoqptyvmc,x.z/bn",
+      "sample": "aqaza swsxs dedcd frfvf gtgbg hyhnh jujmj kik,k lol.l ;p;/; p;/ ol. ik, ujm yhn tgb rfv edc wsx qaz"
+    },
+    {
+      "id": "s1-onefinger",
+      "stage": 1,
+      "module": null,
+      "title": "Гама: один палець — кілька клавіш",
+      "goal": "Контроль одного пальця на всіх закріплених за ним клавішах. Вказівні мають по шість клавіш — їм найбільше роботи.",
+      "rule": "scales",
+      "mechanics": true,
+      "newChars": [],
+      "openChars": " fjdksla;ghrueiwoqptyvmc,x.z/bn",
+      "sample": "aqa aza qz sws sxs wx ded dcd ec frf ftf fgf fvf fbf rtgvb jyj juj jhj jnj jmj yuhnm kik k,k i, lol l.l o. ;p; ;/; p/"
+    },
+    {
+      "id": "s1-br",
+      "stage": 1,
+      "module": null,
+      "title": "Нові клавіші: [ ] '",
+      "goal": "«[» — правий мізинець, «]» — правий мізинець, «'» — правий мізинець. Після кожного натискання палець повертається на домашній ряд.",
+      "rule": "scales",
+      "mechanics": true,
+      "newChars": [
+        "[",
+        "]",
+        "'"
+      ],
+      "openChars": " fjdksla;ghrueiwoqptyvmc,x.z/bn[]'",
+      "sample": ";[; ;[; [;[ ;[[; ;]; ;]; ];] ;]]; ;'; ;'; ';' ;''; [] ][ [][ ][] [' '[ ['[ '[' ]' '] ]'] ']' ,' /]' n'] [[' b[c '[ []] ]'[z"
+    },
+    {
+      "id": "s2-br",
+      "stage": 2,
+      "module": null,
+      "title": "Слова з апострофом",
+      "goal": "Скорочення з апострофом: апостроф набирає правий мізинець, не зупиняючи слово.",
+      "rule": "words",
+      "mechanics": false,
+      "newChars": [],
+      "openChars": " fjdksla;ghrueiwoqptyvmc,x.z/bn[]'",
+      "sample": "i've let's what's they'll can't here's couldn't o'clock what's you've isn't let's we'll doesn't you've i've it's can't aren't"
+    },
+    {
+      "id": "s2-doubles",
+      "stage": 2,
+      "module": null,
+      "title": "Слова з подвоєнням",
+      "goal": "Повтор тієї самої клавіші: палець двічі натискає, не відриваючись далеко від клавіші.",
+      "rule": "words",
+      "mechanics": false,
+      "newChars": [],
+      "openChars": " fjdksla;ghrueiwoqptyvmc,x.z/bn[]'",
+      "sample": "meeting full matter looks off supposed stuff seems hello small business see been look sleep tomorrow door happy dinner room"
+    },
+    {
+      "id": "s2-samefinger",
+      "stage": 2,
+      "module": null,
+      "title": "Слова: один палець між рядами",
+      "goal": "У кожному слові є перехід одним пальцем між рядами — найповільніший рух. Не поспішай на ньому.",
+      "rule": "words",
+      "mechanics": false,
+      "newChars": [],
+      "openChars": " fjdksla;ghrueiwoqptyvmc,x.z/bn[]'",
+      "sample": "friends check like close kind school lot making left looks working kids crazy nice anyway made need friends kids long many"
+    },
+    {
+      "id": "s2-alternate",
+      "stage": 2,
+      "module": null,
+      "title": "Слова з чергуванням рук",
+      "goal": "Кожна наступна літера набирається іншою рукою. Такі слова друкуються найшвидше — лови ритм.",
+      "rule": "words",
+      "mechanics": false,
+      "newChars": [],
+      "openChars": " fjdksla;ghrueiwoqptyvmc,x.z/bn[]'",
+      "sample": "right rich make than turns name spent mama also half handle busy risk than alright signal tight them their both risk laughs"
+    },
+    {
+      "id": "s1-shift",
+      "stage": 1,
+      "module": null,
+      "title": "Великі літери: Shift",
+      "goal": "Shift натискається мізинцем руки, протилежної до літери: ліва літера — правий Shift, права — лівий.",
+      "rule": "scales",
+      "mechanics": true,
+      "newChars": [
+        "F",
+        "J",
+        "D",
+        "K",
+        "S",
+        "L",
+        "A",
+        "G",
+        "H",
+        "R",
+        "U",
+        "E",
+        "I",
+        "W",
+        "O",
+        "Q",
+        "P",
+        "T",
+        "Y",
+        "V",
+        "M",
+        "C",
+        "X",
+        "Z",
+        "B",
+        "N"
+      ],
+      "openChars": " fjdksla;ghrueiwoqptyvmc,x.z/bn[]'FJDKSLAGHRUEIWOQPTYVMCXZBN",
+      "sample": "Aa Ss Dd Ff Jj Kk Ll Fsk Lds Ufk Oak Sds Ufa Baa Nsl Gdk Ofl Uss Wlf"
+    },
+    {
+      "id": "s2-caps",
+      "stage": 2,
+      "module": null,
+      "title": "Слова з великої літери",
+      "goal": "Власне слово не змінюється, додається Shift протилежним мізинцем на першій літері.",
+      "rule": "words",
+      "mechanics": false,
+      "newChars": [],
+      "openChars": " fjdksla;ghrueiwoqptyvmc,x.z/bn[]'FJDKSLAGHRUEIWOQPTYVMCXZBN",
+      "sample": "Get Now Was Tell Right Need For Think Well Tell Now Who Where Okay Never All Could How Look Okay Too Here Down Never Man"
+    },
+    {
+      "id": "s1-digits",
+      "stage": 1,
+      "module": null,
+      "title": "Цифри й дефіс",
+      "goal": "Цифровий ряд: кожна цифра належить тому самому пальцю, що й клавіші під нею. Після цифри палець повертається на домашній ряд.",
+      "rule": "scales",
+      "mechanics": true,
+      "newChars": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "0",
+        "-"
+      ],
+      "openChars": " fjdksla;ghrueiwoqptyvmc,x.z/bn[]'FJDKSLAGHRUEIWOQPTYVMCXZBN1234567890-",
+      "sample": "a1a s2s d3d f4f f5f j6j j7j k8k l9l ;0; ;-; 03 8787 53 3424 31 28 907 472 2-9 20-63"
+    },
+    {
+      "id": "s2-hyphen",
+      "stage": 2,
+      "module": null,
+      "title": "Слова з дефісом",
+      "goal": "Дефіс — правий мізинець у цифровому ряду. Слово через дефіс набирається без паузи.",
+      "rule": "words",
+      "mechanics": false,
+      "newChars": [],
+      "openChars": " fjdksla;ghrueiwoqptyvmc,x.z/bn[]'FJDKSLAGHRUEIWOQPTYVMCXZBN1234567890-",
+      "sample": "good-looking good-bye make-up sister-in-law so-called old-fashioned brand-new no-one good-looking so-called son-in-law old-fashioned"
+    },
+    {
+      "id": "s1-punct",
+      "stage": 1,
+      "module": null,
+      "title": "Розділові знаки",
+      "goal": "Кома, крапка, знак питання, оклику, двокрапка, крапка з комою, лапки — окремі рухи. Після знака — пробіл великим пальцем.",
+      "rule": "scales",
+      "mechanics": true,
+      "newChars": [
+        ",",
+        ".",
+        "?",
+        "!",
+        ":",
+        ";",
+        "\""
+      ],
+      "openChars": " fjdksla;ghrueiwoqptyvmc,x.z/bn[]'FJDKSLAGHRUEIWOQPTYVMCXZBN1234567890-?!:\"",
+      "sample": "very, here. First? Her! do: god; never. \"Make\", much. You, like? Have!"
+    },
+    {
+      "id": "s1-rhythm",
+      "stage": 1,
+      "module": null,
+      "title": "Рівний ритм і зміна темпу",
+      "goal": "Друкуй під метроном: кожне натискання — на удар. Темп зростає тричі протягом вправи; важлива рівність, а не поспіх.",
+      "rule": "scales",
+      "mechanics": true,
+      "newChars": [],
+      "openChars": " fjdksla;ghrueiwoqptyvmc,x.z/bn[]'FJDKSLAGHRUEIWOQPTYVMCXZBN1234567890-?!:\"",
+      "sample": "ajaj sksk dldl f;f; all love two will for you over off ajaj sksk dldl f;f; how very not was been too here just back see"
+    },
+    {
+      "id": "a-bigrams-1",
+      "stage": 3,
+      "module": "bigrams",
+      "title": "Біграми: th · he · ou · in",
+      "goal": "Біграми «th», «he», «ou», «in»: спершу сама комбінація, потім слова з нею. «th» — лівим вказівним, правим вказівним. «he» — правим вказівним, лівим середнім. «ou» — правим безіменним, правим вказівним. «in» — правим середнім, правим вказівним.",
+      "rule": "academy",
+      "mechanics": false,
+      "newChars": [],
+      "openChars": "усі символи розкладки",
+      "sample": "th th thing th this these he he them he help here ou ou out ou should could in in into in anything fine"
+    },
+    {
+      "id": "a-bigrams-2",
+      "stage": 3,
+      "module": "bigrams",
+      "title": "Біграми: er · yo · an · re",
+      "goal": "Біграми «er», «yo», «an», «re»: спершу сама комбінація, потім слова з нею. «er» — лівим середнім, лівим вказівним. «yo» — правим вказівним, правим безіменним. «an» — лівим мізинцем, правим вказівним. «re» — лівим вказівним, лівим середнім.",
+      "rule": "academy",
+      "mechanics": false,
+      "newChars": [],
+      "openChars": "усі символи розкладки",
+      "sample": "er er were er over where yo yo yoga yo youth your an an any an thanks want re re care re were real"
+    },
+    {
+      "id": "a-bigrams-3",
+      "stage": 3,
+      "module": "bigrams",
+      "title": "Біграми: ha · at · it · ng",
+      "goal": "Біграми «ha», «at», «it», «ng»: спершу сама комбінація, потім слова з нею. «ha» — правим вказівним, лівим мізинцем. «at» — лівим мізинцем, лівим вказівним. «it» — правим середнім, лівим вказівним. «ng» — правим вказівним, лівим вказівним.",
+      "rule": "academy",
+      "mechanics": false,
+      "newChars": [],
+      "openChars": "усі символи розкладки",
+      "sample": "ha ha having ha have than at at great at at water it it city it little bit ng ng coming ng being anything"
+    },
+    {
+      "id": "a-trigrams-1",
+      "stage": 3,
+      "module": "trigrams",
+      "title": "Триграми: the · you · ing · hat",
+      "goal": "Триграми «the», «you», «ing», «hat»: спершу сама комбінація, потім слова з нею. «the» — лівим вказівним, правим вказівним, лівим середнім. «you» — правим вказівним, правим безіменним, правим вказівним. «ing» — правим середнім, правим вказівним, лівим вказівним. «hat» — правим вказівним, лівим мізинцем, лівим вказівним.",
+      "rule": "academy",
+      "mechanics": false,
+      "newChars": [],
+      "openChars": "усі символи розкладки",
+      "sample": "the the these the they either you you your you yourselves younger ing ing morning ing things doing hat hat hats hat hates somewhat"
+    },
+    {
+      "id": "a-trigrams-2",
+      "stage": 3,
+      "module": "trigrams",
+      "title": "Триграми: her · and · thi · tha",
+      "goal": "Триграми «her», «and», «thi», «tha»: спершу сама комбінація, потім слова з нею. «her» — правим вказівним, лівим середнім, лівим вказівним. «and» — лівим мізинцем, правим вказівним, лівим середнім. «thi» — лівим вказівним, правим вказівним, правим середнім. «tha» — лівим вказівним, правим вказівним, лівим мізинцем.",
+      "rule": "academy",
+      "mechanics": false,
+      "newChars": [],
+      "openChars": "усі символи розкладки",
+      "sample": "her her brother her others either and and husband and commander handle thi thi breathing thi thing anything tha tha that tha thank thanksgiving"
+    },
+    {
+      "id": "a-trigrams-3",
+      "stage": 3,
+      "module": "trigrams",
+      "title": "Триграми: ere · all · his · our",
+      "goal": "Триграми «ere», «all», «his», «our»: спершу сама комбінація, потім слова з нею. «ere» — лівим середнім, лівим вказівним, лівим середнім. «all» — лівим мізинцем, правим безіменним, правим безіменним. «his» — правим вказівним, правим середнім, лівим безіменним. «our» — правим безіменним, правим вказівним, лівим вказівним.",
+      "rule": "academy",
+      "mechanics": false,
+      "newChars": [],
+      "openChars": "усі символи розкладки",
+      "sample": "ere ere interest ere interesting nowhere all all wall all calling called his his whispering his whistles historical our our yourselves our our ours"
+    },
+    {
+      "id": "a-morphemes-1",
+      "stage": 3,
+      "module": "morphemes",
+      "title": "Морфеми: -ing -tion -ed -ly",
+      "goal": "Закінчення -ing, -tion, -ed, -ly набирай як один суцільний рух, без паузи перед останніми літерами.",
+      "rule": "academy",
+      "mechanics": false,
+      "newChars": [],
+      "openChars": "усі символи розкладки",
+      "sample": "ing ing trying talking going morning tion tion action mention competition position ed ed wanted tried married bed ly ly absolutely finally totally really"
+    },
+    {
+      "id": "a-morphemes-2",
+      "stage": 3,
+      "module": "morphemes",
+      "title": "Морфеми: -er -ment -ness -able",
+      "goal": "Закінчення -er, -ment, -ness, -able набирай як один суцільний рух, без паузи перед останніми літерами.",
+      "rule": "academy",
+      "mechanics": false,
+      "newChars": [],
+      "openChars": "усі символи розкладки",
+      "sample": "er er her never mother remember ment ment statement agreement comment department ness ness weakness consciousness sadness illness able able unable stable table remarkable"
+    },
+    {
+      "id": "a-samefinger-1",
+      "stage": 3,
+      "module": "samefinger",
+      "title": "Один палець: ed · lo · de · ce",
+      "goal": "Один палець «ed», «lo», «de», «ce»: спершу сама комбінація, потім слова з нею. «ed» — лівим середнім пальцем. «lo» — правим безіменним пальцем. «de» — лівим середнім пальцем. «ce» — лівим середнім пальцем.",
+      "rule": "academy",
+      "mechanics": false,
+      "newChars": [],
+      "openChars": "усі символи розкладки",
+      "sample": "ed ed tried ed asked bed lo lo hello lo long looking de de inside de side president ce ce once ce since office"
+    },
+    {
+      "id": "a-samefinger-2",
+      "stage": 3,
+      "module": "samefinger",
+      "title": "Один палець: un · my · ec · tr",
+      "goal": "Один палець «un», «my», «ec», «tr»: спершу сама комбінація, потім слова з нею. «un» — правим вказівним пальцем. «my» — правим вказівним пальцем. «ec» — лівим середнім пальцем. «tr» — лівим вказівним пальцем.",
+      "rule": "academy",
+      "mechanics": false,
+      "newChars": [],
+      "openChars": "усі символи розкладки",
+      "sample": "un un understand un running until my my army my academy myth ec ec decided ec become secret tr tr strong tr control truth"
+    },
+    {
+      "id": "a-flow-1",
+      "stage": 3,
+      "module": "flow",
+      "title": "Чергування рук",
+      "goal": "У цих словах кожну наступну літеру набирає інша рука. Тримай рівний темп, як у барабанному дробі.",
+      "rule": "academy",
+      "mechanics": false,
+      "newChars": [],
+      "openChars": "усі символи розкладки",
+      "sample": "shame height handle chairman snake giant handy theory problem euros bible handle shake chairman burns widow angle field visitor bucks"
+    },
+    {
+      "id": "a-flow-2",
+      "stage": 3,
+      "module": "flow",
+      "title": "Перекати: er · re · te · as",
+      "goal": "Перекати «er», «re», «te», «as»: спершу сама комбінація, потім слова з нею. «er» — лівим середнім, лівим вказівним. «re» — лівим вказівним, лівим середнім. «te» — лівим вказівним, лівим середнім. «as» — лівим мізинцем, лівим безіменним.",
+      "rule": "academy",
+      "mechanics": false,
+      "newChars": [],
+      "openChars": "усі символи розкладки",
+      "sample": "er er here er very after re re care re before here te te daughter te quite later as as last as ask asking"
+    },
+    {
+      "id": "a-flow-3",
+      "stage": 3,
+      "module": "flow",
+      "title": "Перекати: we · et · sa · io",
+      "goal": "Перекати «we», «et», «sa», «io»: спершу сама комбінація, потім слова з нею. «we» — лівим безіменним, лівим середнім. «et» — лівим середнім, лівим вказівним. «sa» — лівим безіменним, лівим мізинцем. «io» — правим середнім, правим безіменним.",
+      "rule": "academy",
+      "mechanics": false,
+      "newChars": [],
+      "openChars": "усі символи розкладки",
+      "sample": "we we we we were answer et et meet et get let sa sa same sa sad save io io relationship io station questions"
+    },
+    {
+      "id": "a-doubles-1",
+      "stage": 3,
+      "module": "doubles",
+      "title": "Подвоєння: ll · ee · oo · ss",
+      "goal": "Подвоєння «ll», «ee», «oo», «ss»: спершу сама комбінація, потім слова з нею. «ll» — правим безіменним пальцем. «ee» — лівим середнім пальцем. «oo» — правим безіменним пальцем. «ss» — лівим безіменним пальцем.",
+      "rule": "academy",
+      "mechanics": false,
+      "newChars": [],
+      "openChars": "усі символи розкладки",
+      "sample": "ll ll small ll still all ee ee needs ee keep sleep oo oo good oo took blood ss ss across ss pass less"
+    },
+    {
+      "id": "a-signs-1",
+      "stage": 3,
+      "module": "signs",
+      "title": "Речення з розділовими знаками",
+      "goal": "Великі літери, кома, крапка, лапки, знаки питання й оклику. Shift — протилежним мізинцем.",
+      "rule": "text",
+      "mechanics": false,
+      "newChars": [],
+      "openChars": "усі символи розкладки",
+      "sample": "London, Paris, Rome, Berlin and Madrid are large cities. She said: \"Accuracy first, speed second.\" Who is it? It's me, Kate. Come in, please!"
+    },
+    {
+      "id": "a-signs-2",
+      "stage": 3,
+      "module": "signs",
+      "title": "Апостроф і дефіс",
+      "goal": "Слова з апострофом і дефісом. Знак усередині слова не має зупиняти рух.",
+      "rule": "academy",
+      "mechanics": false,
+      "newChars": [],
+      "openChars": "усі символи розкладки",
+      "sample": "brother-in-law he's old-fashioned haven't doesn't good-looking i'll no-one we've good-bye what's couldn't can't haven't who's we'll"
+    },
+    {
+      "id": "a-signs-3",
+      "stage": 3,
+      "module": "signs",
+      "title": "Числа в реченнях",
+      "goal": "Цифри набираються тими самими пальцями, що й клавіші під ними. Після числа — назад на домашній ряд.",
+      "rule": "text",
+      "mechanics": false,
+      "newChars": [],
+      "openChars": "усі символи розкладки",
+      "sample": "The price is 480; with a 15% discount it is 408. The train leaves at 7:45 and arrives at 13:20. Write it down: 2 + 2 = 4, 10 - 3 = 7, 6 * 8 = 48."
+    },
+    {
+      "id": "a-tempo-1",
+      "stage": 3,
+      "module": "tempo",
+      "title": "Спринт: короткі слова",
+      "goal": "Найчастотніші короткі слова. Мета — темп без зупинок, точність не нижче 97%.",
+      "rule": "tempo",
+      "mechanics": false,
+      "newChars": [],
+      "openChars": "усі символи розкладки",
+      "sample": "this just all well if is you did with will i she for her not what a for your my"
+    },
+    {
+      "id": "a-tempo-2",
+      "stage": 3,
+      "module": "tempo",
+      "title": "Спринт: двісті найчастотніших слів",
+      "goal": "Слова, з яких складається половина будь-якого тексту. Набирай їх цілими рухами, а не по літерах.",
+      "rule": "tempo",
+      "mechanics": false,
+      "newChars": [],
+      "openChars": "усі символи розкладки",
+      "sample": "it her was how to his let okay now this but one my and yeah her with there just are at what let so your with will would"
+    },
+    {
+      "id": "a-sentences-1",
+      "stage": 3,
+      "module": "sentences",
+      "title": "Речення, серія 1",
+      "goal": "Три речення поспіль. Дивись на текст на крок уперед і тримай рівний ритм.",
+      "rule": "text",
+      "mechanics": false,
+      "newChars": [],
+      "openChars": "усі символи розкладки",
+      "sample": "A musician plays scales every day, even after years on stage. Today we learn new keys, and tomorrow we build words from them. He opened the window, and fresh wind filled the room."
+    },
+    {
+      "id": "a-sentences-2",
+      "stage": 3,
+      "module": "sentences",
+      "title": "Речення, серія 2",
+      "goal": "Три речення поспіль. Дивись на текст на крок уперед і тримай рівний ритм.",
+      "rule": "text",
+      "mechanics": false,
+      "newChars": [],
+      "openChars": "усі символи розкладки",
+      "sample": "Those who write without hurry end up writing faster. The hands stay calm while the fingers reach for the keys. After a long winter the first warm sun feels like a small wonder."
+    },
+    {
+      "id": "a-sentences-3",
+      "stage": 3,
+      "module": "sentences",
+      "title": "Речення, серія 3",
+      "goal": "Три речення поспіль. Дивись на текст на крок уперед і тримай рівний ритм.",
+      "rule": "text",
+      "mechanics": false,
+      "newChars": [],
+      "openChars": "усі символи розкладки",
+      "sample": "The children ran to the river as soon as the rain stopped. Accuracy comes first, and speed will follow. The tea had gone cold, but the talk was only starting."
+    },
+    {
+      "id": "a-paragraphs-1",
+      "stage": 3,
+      "module": "paragraphs",
+      "title": "Абзац 1",
+      "goal": "Цілий абзац без зупинок. Якщо помиляєшся — знизь темп, а не кидай ритм.",
+      "rule": "text",
+      "mechanics": false,
+      "newChars": [],
+      "openChars": "усі символи розкладки",
+      "sample": "A pianist does not begin with a concert. First come the scales: short, simple and always the same. They may seem dull, yet they teach the fingers to move evenly and exactly. Typing works the same way. Short repeated drills build the move, and later those moves turn into words, lines and whole pages."
+    },
+    {
+      "id": "a-paragraphs-2",
+      "stage": 3,
+      "module": "paragraphs",
+      "title": "Абзац 2",
+      "goal": "Цілий абзац без зупинок. Якщо помиляєшся — знизь темп, а не кидай ритм.",
+      "rule": "text",
+      "mechanics": false,
+      "newChars": [],
+      "openChars": "усі символи розкладки",
+      "sample": "In the morning a mist lay over the river. The fisherman sat on the bank and did not hurry, because fish do not like fuss. Somewhere far away a car passed, a dog barked, and it was quiet again. The sun rose above the forest, the mist was gone, and the water looked like a large calm mirror."
+    },
+    {
+      "id": "a-paragraphs-3",
+      "stage": 3,
+      "module": "paragraphs",
+      "title": "Абзац 3",
+      "goal": "Цілий абзац без зупинок. Якщо помиляєшся — знизь темп, а не кидай ритм.",
+      "rule": "text",
+      "mechanics": false,
+      "newChars": [],
+      "openChars": "усі символи розкладки",
+      "sample": "A good habit grows slowly. In the first week it takes effort, in the second it takes reminders, and after a month it is simply part of the day. Twenty minutes of typing a day looks small, yet over a year it adds up to more than a hundred hours of practice. No single long session can match that."
+    }
+  ]
+}

@@ -1,0 +1,74 @@
+{
+  "meta": {
+    "language": "en",
+    "license": "Original texts of the Solo project, GPL-3.0-or-later. Written for the trainer, not copied from third-party sources.",
+    "note": "Contractions are added by hand: the subtitle frequency list splits words at the apostrophe."
+  },
+  "apostropheWords": ["don't", "it's", "i'm", "that's", "you're", "can't", "didn't", "we're", "there's", "he's", "what's", "i'll", "isn't", "let's", "she's", "won't", "they're", "doesn't", "i've", "couldn't", "wasn't", "we'll", "wouldn't", "haven't", "you'll", "aren't", "who's", "you've", "here's", "it'll", "shouldn't", "weren't", "hasn't", "we've", "they'll", "o'clock"],
+  "gWords": [],
+  "suffixes": [
+    { "label": "-ing", "end": "ing" },
+    { "label": "-tion", "end": "tion" },
+    { "label": "-ed", "end": "ed" },
+    { "label": "-ly", "end": "ly" },
+    { "label": "-er", "end": "er" },
+    { "label": "-ment", "end": "ment" },
+    { "label": "-ness", "end": "ness" },
+    { "label": "-able", "end": "able" }
+  ],
+  "punctuation": [
+    "Yes, I am home. Where are you? Come over!",
+    "She said: \"Accuracy first, speed second.\"",
+    "Buy bread, milk, cheese and apples; the rest can wait.",
+    "Wow! Is that true? Yes, it is.",
+    "Mom, Dad, my brother and my sister are all at the table.",
+    "\"Good morning,\" she said. \"Nice to see you,\" he replied.",
+    "Note: your fingers rest on A, S, D, F and J, K, L.",
+    "Who is it? It's me, Kate. Come in, please!",
+    "London, Paris, Rome, Berlin and Madrid are large cities.",
+    "Think first, then type: you will make fewer mistakes."
+  ],
+  "numbers": [
+    "A year has 12 months, 52 weeks and 365 days.",
+    "The train leaves at 7:45 and arrives at 13:20.",
+    "The price is 480; with a 15% discount it is 408.",
+    "My number is 36, and there are 9 people before me.",
+    "The first web page went online in 1991.",
+    "Write it down: 2 + 2 = 4, 10 - 3 = 7, 6 * 8 = 48.",
+    "A pace of 150 characters per minute is 30 words."
+  ],
+  "sentences": [
+    "Your fingers always return to the home row.",
+    "Keep your eyes on the screen, not on the keys.",
+    "Accuracy comes first, and speed will follow.",
+    "A steady rhythm beats short bursts and long stops.",
+    "Every key belongs to one finger, and that never changes.",
+    "Twenty minutes a day does more than one long hour a week.",
+    "A mistake is a hint about the move you still need to learn.",
+    "The hands stay calm while the fingers reach for the keys.",
+    "The bumps on two keys help you find the home position by touch.",
+    "Today we learn new keys, and tomorrow we build words from them.",
+    "Early in the morning the town is quiet and the streets are empty.",
+    "In autumn the forest turns yellow, red and a little sad.",
+    "A good book is like a talk with a wise friend.",
+    "We agreed to meet near the old bridge at six in the evening.",
+    "The children ran to the river as soon as the rain stopped.",
+    "If you do not know the road, ask someone who has walked it.",
+    "After a long winter the first warm sun feels like a small wonder.",
+    "Grandma baked bread, and the whole street could smell it.",
+    "A musician plays scales every day, even after years on stage.",
+    "Those who write without hurry end up writing faster.",
+    "A bird circled over the field while a train hummed far away.",
+    "He opened the window, and fresh wind filled the room.",
+    "The best time to plant a tree was twenty years ago; the next best is today.",
+    "The tea had gone cold, but the talk was only starting."
+  ],
+  "paragraphs": [
+    "Touch typing is a skill of the hands, not of the eyes. The fingers rest on the home row and know the way to every key. After each press the finger comes back, so the next move always starts from the same point. That is why you never need to look down: the hand already knows where it is.",
+    "A pianist does not begin with a concert. First come the scales: short, simple and always the same. They may seem dull, yet they teach the fingers to move evenly and exactly. Typing works the same way. Short repeated drills build the move, and later those moves turn into words, lines and whole pages.",
+    "Speed cannot be taken by force. When you rush, the fingers get mixed up, and each mistake costs more time than the hurry ever saved. It is far better to type a little slower but evenly, without stops. Once accuracy becomes a habit, the pace grows on its own and needs no pushing.",
+    "In the morning a mist lay over the river. The fisherman sat on the bank and did not hurry, because fish do not like fuss. Somewhere far away a car passed, a dog barked, and it was quiet again. The sun rose above the forest, the mist was gone, and the water looked like a large calm mirror.",
+    "Every town has its own old street. The houses are low, the pavements are narrow, and the trees remember more than the people do. By day it is busy with shops and small cafes, and in the evening the yellow lamps come on and the street looks the way it did a hundred years ago.",
+    "A good habit grows slowly. In the first week it takes effort, in the second it takes reminders, and after a month it is simply part of the day. Twenty minutes of typing a day looks small, yet over a year it adds up to more than a hundred hours of practice. No single long session can match that."
+  ]
+}
